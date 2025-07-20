@@ -19,22 +19,22 @@ const Login = () => {
             {
                 state === 'Sign Up' && 
                 <div>
-                    <p className='text-green-600 font-light'>Name</p>
+                    <p className='text-green-600 font-normal'>Name</p>
                     <input className='w-full border border-green-600 p-2 outline-none rounded text-sm font-light text-green-600' type="text" placeholder='Name' onChange={(e) => setName(e.target.value)} value={name} />
                 </div>
             }
             <div>
-                <p className='text-green-600 font-light'>Email</p>
+                <p className='text-green-600 font-normal'>Email</p>
                 <input className='w-full border border-green-600 p-2 outline-none rounded  text-sm font-light text-green-600' type="email" placeholder='Email' onChange={(e) => setEmail(e.target.value)} value={email} />
             </div>
             <div>
-                <p className='text-green-600 font-light'>Password</p>
+                <p className='text-green-600 font-normal'>Password</p>
                 <input className='w-full border border-green-600 p-2 outline-none rounded  text-sm font-light text-green-600' type="password" placeholder='Password' onChange={(e) => setPassword(e.target.value)} value={password} />
             </div>
             {
                 state === 'Sign Up' && 
                 <div>
-                    <p className='text-green-600 font-light'>Phone</p>
+                    <p className='text-green-600 font-normal'>Phone</p>
                     <input className='w-full border border-green-600 p-2 outline-none rounded  text-sm font-light text-green-600' type="tel" placeholder='Phone' onChange={(e) => setMobile(e.target.value)} value={mobile} />
                 </div>
             }
@@ -42,8 +42,8 @@ const Login = () => {
 
             {
                 state === 'Sign Up' 
-                ? <p className='text-gray-300 font-light cursor-pointer'>already have an account ? <span className='text-green-600' onClick={() => {setState('Login')}}>login here</span></p>
-                : <p className='text-gray-300 font-light cursor-pointer'>dont have an account ? <span className='text-green-600' onClick={() => {setState('Sign Up')}}>create an account</span></p>
+                ? <p className='text-gray-300 font-light cursor-pointer'>already have an account ? <span className='text-green-600 font-medium' onClick={() => {setState('Login')}}>login here</span></p>
+                : <p className='text-gray-300 font-light cursor-pointer'>dont have an account ? <span className='text-green-600 font-medium' onClick={() => {setState('Sign Up')}}>create an account</span></p>
             }
         </div>
       </form>
