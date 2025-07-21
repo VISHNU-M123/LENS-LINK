@@ -3,6 +3,7 @@ import userModel from '../models/userModel.js';
 import bcrypt from 'bcrypt'
 import otpModel from '../models/otpModel.js';
 import nodemailer from 'nodemailer'
+import jwt from 'jsonwebtoken'
 
 const registerUser = async (req, res) => {
     try {
@@ -46,7 +47,7 @@ const registerUser = async (req, res) => {
         if(userData){
             await sendVerifyMail(name.trim(), email.trim(), userData._id)
 
-            return res.status(200).json({success:true, message:'OTP has been send'})
+            return res.status(200).json({success:true, message:'OTP has been send', userId:userData._id})
         }else{
             return res.status(400).json({success:false, message:'Your registration has failed'})
         }
@@ -99,6 +100,84 @@ const sendVerifyMail = async (name, email, user_id) => {
     }
 }
 
+const verifyOtp = async (req, res) => {
+    try {
+        const {otp, userId} = req.body
+        if(!userId || !otp){
+            return res.status(400).json({success:false, message:'Missing UserId or OTP'})
+        }
+
+        const otpEntry = await otpModel.findOne({user_id: userId, otp: otp})
+        if(!otpEntry){
+            return res.status(400).json({success:false, message:'Invalid OTP or OTP has been expired'})
+        }
+
+        await userModel.findByIdAndUpdate(userId, {is_verified:true})
+
+        await otpModel.deleteOne({_id:otpEntry._id})
+
+        const token = jwt.sign({userId}, process.env.JWT_SECRET, {expiresIn:'7d'})
+
+        res.status(200).json({success:true, message:'OTP verified successfully', token, userId})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const resendOtp = async (req, res) => {
+    try {
+        const {userId} = req.body
+        if(!userId){
+            return res.status(400).json({success:false, message:'Please register again'})
+        }
+
+        const user = await userModel.findById(userId)
+        if(!user){
+            return res.status(400).json({success:false, message:'User not found'})
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 9000).toString()
+
+        await otpModel.updateOne(
+            {user_id: userId},
+            {$set:{otp: otp, createdAt: new Date()}},
+            {upsert: true}
+        )
+
+        const transporter = nodemailer.createTransport({
+            host:process.env.SMTP_HOST,
+            port:parseInt(process.env.SMTP_PORT),
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:process.env.SMTP_USER,
+                pass:process.env.SMTP_PASS
+            }
+        })
+
+        const mailOptions = {
+            from:process.env.FROM_EMAIL,
+            to:user.email,
+            subject:"Resend email verification - OTP",
+            html:`<p>Hi ${user.name},</p>
+                  <p>Your new OTP for email verification is <strong>${otp}</strong>.</p>
+                  <p>Please enter this OTP within the next 1 minute to verify your email.</p>`
+        }
+
+        transporter.sendMail(mailOptions, function (error, info){
+            if(error){
+                return res.status(400).json({success:false, message:'Failed to resend OTP. Please try again later.'})
+            }else{
+                return res.status(200).json({success:true, message:'OTP has been resend successfully'})
+            }
+        })
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
-    registerUser
+    registerUser,
+    verifyOtp,
+    resendOtp
 }

@@ -1,4 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useContext } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { AppContext } from '../context/AppContext'
+import axios from 'axios'
 
 const OTP = () => {
 
@@ -7,6 +11,13 @@ const OTP = () => {
     const [timer, setTimer] = useState(60)
     const [startTime, setStartTime] = useState(null)
     const inputsRef = useRef([])
+
+    const navigate = useNavigate()
+    const location = useLocation()
+    const searchParams = new URLSearchParams(location.search)
+    const userId = searchParams.get('userId')
+
+    const {backendUrl, token, setToken} = useContext(AppContext)
 
     const handleChange = (value, index) => {
         if(!isNaN(value) && value.length <= 1){
@@ -70,9 +81,46 @@ const OTP = () => {
 
         return () => clearInterval(interval)
     },[startTime])
+
+    const handleVerifyOtp = async (event) => {
+        event.preventDefault()
+
+        try {
+            const enteredOtp = otp.join('')
+            const {data} = await axios.post(`${backendUrl}/api/user/verify-otp`, {userId, otp:enteredOtp})
+
+            if(data.success){
+                localStorage.setItem('token', data.token)
+                setToken(data.token)
+                navigate('/')
+            }else{
+                alert(data.message)
+            }
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    const handleResendOtp = async () => {
+        try {
+            console.log('backend url:', backendUrl)
+            console.log('userId:', userId)
+            const {data} = await axios.post(`${backendUrl}/api/user/resend-otp`, {userId})
+            if(data.success){
+                alert('OTP resend successfully')
+                setOtp(new Array(length).fill(''))
+                startTimer()
+                setTimer(60)
+            }else{
+                alert(data.message)
+            }
+        } catch (error) {
+            alert(error.message)
+        }
+    }
   return (
     <div className='min-h-screen flex items-center justify-center bg-black overflow-x-hidden'>
-      <form action="" className='min-w-[340px]'>
+      <form action="" onSubmit={handleVerifyOtp} className='min-w-[340px]'>
         <div className='border border-green-600 p-8 rounded-2xl space-y-5'>
             <p className='text-center text-2xl font-bold text-green-600'>OTP</p>
             <div className='flex justify-around'>
@@ -82,7 +130,7 @@ const OTP = () => {
             </div>
 
             <div className={`h-[80px] w-[80px] border border-green-600 ${timer > 0 ? 'animate-ping' : ''} bg-green-600 mx-auto rounded-full text-white text-center items-center flex justify-center font-bold text-2xl`}>{formatTime(timer)}</div>
-            <button type='submit' className='text-white bg-green-600 p-1 w-full rounded mt-2 cursor-pointer'>{timer === 0 ? 'Resend OTP' : 'Verify OTP'}</button>
+            <button type={timer === 0 ? 'button' : 'submit'} onClick={timer === 0 ? handleResendOtp : undefined} className='text-white bg-green-600 p-1 w-full rounded mt-2 cursor-pointer'>{timer === 0 ? 'Resend OTP' : 'Verify OTP'}</button>
         </div>
       </form>
     </div>

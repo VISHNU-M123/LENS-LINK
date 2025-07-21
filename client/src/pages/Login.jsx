@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { AppContext } from '../context/AppContext'
 
 const Login = () => {
 
@@ -11,9 +12,35 @@ const Login = () => {
     const [mobile, setMobile] = useState('')
     const [password, setPassword] = useState('')
 
+    const {backendUrl, token} = useContext(AppContext)
+
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+
+        try {
+            if(state === 'Sign Up'){
+                const {data} = await axios.post(`${backendUrl}/api/user/register`, {name, email, mobile, password})
+
+                if(data.success){
+                    navigate(`/verify-otp?userId=${data.userId}`)
+                }else{
+                    alert(data.message)
+                }
+            }
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+
+    useEffect(() => {
+        if(token){
+            navigate('/')
+        }
+    },[token])
+
   return (
     <div className='min-h-screen flex items-center justify-center bg-black overflow-x-hidden'>
-      <form action="" className='min-w-[340px]'>
+      <form action="" onSubmit={handleSubmit} className='min-w-[340px]'>
         <div className='border border-green-600 p-8 rounded-2xl space-y-3'>
             <p className='text-center text-2xl font-bold text-green-600'>{state === 'Sign Up' ? 'Create account' : 'Login'}</p>
             {
