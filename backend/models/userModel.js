@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
     is_verified:{
         type:Boolean,
         default:false
+    },
+    is_blocked:{
+        type:String,
+        enum:["Active", "Blocked"],
+        default:"Active"
     }
 })
 

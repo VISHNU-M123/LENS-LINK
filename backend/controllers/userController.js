@@ -96,7 +96,7 @@ const sendVerifyMail = async (name, email, user_id) => {
         })
         
     } catch (error) {
-        res.status(500).json({success:false, message:error.message})
+        console.error(error.message)
     }
 }
 
@@ -176,8 +176,42 @@ const resendOtp = async (req, res) => {
     }
 }
 
+const verifyLogin = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        if(!email || email.trim() === '' || !password || password.trim() === ''){
+            return res.status(400).json({success:false, message:'Please provide email and password'})
+        }
+
+        const userData = await userModel.findOne({email:email})
+
+        if(!userData){
+            return res.status(400).json({success:false, message:'Invalid email or password'})
+        }
+
+        const passwordMatch = await bcrypt.compare(password, userData.password)
+        if(passwordMatch){
+            if(userData.is_verified === false){
+                return res.status(400).json({success:false, message:'User not verified'})
+            }else{
+                if(userData.is_blocked === 'Active'){
+                    const token = jwt.sign({id:userData._id}, process.env.JWT_SECRET, {expiresIn:'7d'})
+                    return res.status(200).json({success:true, token})
+                }else{
+                    return res.status(400).json({success:false, message:'You are blocked'})
+                }
+            }
+        }else{
+            return res.status(400).json({success:false, message:'invalid credentials'})
+        }
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerUser,
     verifyOtp,
-    resendOtp
+    resendOtp,
+    verifyLogin
 }
