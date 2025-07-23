@@ -60,8 +60,8 @@ const Footer = () => {
                 <div className='mt-5'>
                     <form action="">
                         <div className='flex'>
-                            <input type="text" className='px-5 py-3 text-white outline-none border border-green-600 w-full' placeholder='Email' />
-                            <button className='bg-green-600 px-3 py-3 flex items-center justify-center'><IoIosSend color='white' size={30} /></button>
+                            <input type="text" className='px-5 py-3 text-white outline-none border border-[#ec0a30] w-full' placeholder='Email' />
+                            <button className='bg-[#ec0a30] px-3 py-3 flex items-center justify-center'><IoIosSend color='white' size={30} /></button>
                         </div>
                     </form>
                 </div>

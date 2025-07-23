@@ -118,7 +118,11 @@ const Login = () => {
                 }
             }
         } catch (error) {
-            setGlobalErrorMsg(error.message)
+            if(error.response && error.response.data && error.response.data.message){
+                setGlobalErrorMsg(error.response.data.message)
+            }else{
+                setGlobalErrorMsg(error.message)
+            }
         }
     }
 

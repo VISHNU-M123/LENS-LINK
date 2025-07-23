@@ -5,7 +5,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import firstCorousel from '../assets/hero-1.jpg'
-import secondCorousel from '../assets/hero-2.jpg'
+import secondCorousel from '../assets/banner-1.jpg'
 import ServicesCard from '../components/ServicesCard';
 import shootingImg from '../assets/service-1.jpg'
 import videoImg from '../assets/service-2.jpg'
@@ -101,6 +101,7 @@ const Home = () => {
 
   const categorySettings = {
     dots: false,
+    arrows:false,
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -133,7 +134,7 @@ const Home = () => {
   }
 
   return (
-    <div className="w-full overflow-x-hidden">
+    <div className="w-full overflow-x-hidden bg-black">
       <Navbar/>
 
       <div className="overflow-hidden w-full">
@@ -143,7 +144,7 @@ const Home = () => {
               <div className="h-screen max-h-[900px] flex flex-col justify-center items-center text-center text-white bg-cover bg-center" style={{backgroundImage: `url(${slide.image})`}}>
                 <h1 className='md:text-[60px] font-[700] text-[38px] md:leading-tight leading-[1.2]'>{slide.title}</h1>
                 <p className='lg:max-w-3xl mt-3 md:max-w-2xl md:leading-loose leading-[1.9] px-2'>{slide.desc}</p>
-                <button className='bg-green-600 font-bold py-3 px-8 mt-8 cursor-pointer'>{slide.button}</button>
+                <button className='bg-[#ec0a30] hover:bg-[#701313] font-bold py-3 px-8 mt-8 cursor-pointer'>{slide.button}</button>
               </div>
             </div>
           ))}
@@ -159,11 +160,11 @@ const Home = () => {
       <div className='px-6 sm:px-8 lg:px-12 xl:max-w-7xl xl:mx-auto py-20'>
         <div className='flex flex-col md:flex-row justify-between md:items-center gap-10'>
           <div className='md:w-1/2'>
-            <h1 className='font-[700] text-[36px] text-[#111111] leading-tight'>EXPLORE BY CATEGORY</h1>
-            <p className='text-[#666666] text-[15px] leading-7 mt-2'>From engagements to haldi ceremonies, we capture every moment with style and heart. Explore our event categories to see the story unfold.</p>
+            <h1 className='font-[700] text-[36px] text-white leading-tight'>EXPLORE BY CATEGORY</h1>
+            <p className='text-zinc-500 text-[15px] leading-7 mt-2'>From engagements to haldi ceremonies, we capture every moment with style and heart. Explore our event categories to see the story unfold.</p>
           </div>
           <div>
-            <button className='bg-green-600 text-white py-3 px-8 font-semibold'>VIEW GALLERY</button>
+            <button className='bg-[#ec0a30] hover:bg-[#701313] text-white py-3 px-8 font-semibold cursor-pointer'>VIEW GALLERY</button>
           </div>
         </div>
       </div>
@@ -179,9 +180,9 @@ const Home = () => {
       </div>
 
       <div className='px-6 sm:px-8 lg:px-12 xl:max-w-7xl xl:mx-auto pt-20'>
-        <h1 className='text-center font-[700] text-[36px] text-[#111111]'>OUR LATEST WORKS</h1>
+        <h1 className='text-center font-[700] text-[36px] text-white'>OUR LATEST WORKS</h1>
         <ul className="flex flex-wrap justify-center mt-4">
-          <li onClick={() => {setSelectedCategoryId(null); setSubcategories([])}} className={`${!selectedCategoryId ? 'text-green-600' : 'text-[#888888]'} text-[17px] px-1.5 md:px-6 border-r border-[#ccc] pr-1.5 md:pl-8 cursor-pointer`}>All</li>
+          <li onClick={() => {setSelectedCategoryId(null); setSubcategories([])}} className={`${!selectedCategoryId ? 'text-[#ec0a30]' : 'text-[#888888]'} text-[17px] px-1.5 md:px-6 border-r border-[#ccc] pr-1.5 md:pl-8 cursor-pointer`}>All</li>
           {categories.map(category => (
             <li key={category._id} onClick={() => handleCategoryClick(category._id)} className={`${selectedCategoryId === category._id ? 'text-green-600' : 'text-[#888888]'} text-[17px] px-1.5 md:px-6 border-r border-[#ccc] pr-1.5 md:pl-8 cursor-pointer`}>{category.categoryName}</li>
           ))}
@@ -218,9 +219,9 @@ const Home = () => {
       </div>
 
       <div className='flex items-center justify-center mt-12'>
-        <button className='text-white bg-black text-md font-bold tracking-widest py-3.5 px-24 cursor-pointer'>LOAD MORE</button>
+        <button className='text-white bg-[#ec0a30] hover:bg-[#701313] text-md font-bold tracking-widest py-3.5 px-24 cursor-pointer'>LOAD MORE</button>
       </div>
-      <button onClick={logout} className='border border-gray-300 p-1 px-4'>Logout</button>
+      <button onClick={logout} className='border border-gray-300 p-1 px-4 text-white'>Logout</button>
 
       <Footer/>
     </div>
