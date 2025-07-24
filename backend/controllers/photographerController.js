@@ -1,7 +1,7 @@
 import validator from 'validator'
-import photographerModel from '../models/photographerModel'
+import photographerModel from '../models/photographerModel.js'
 import bcrypt from 'bcrypt'
-import photographerOtpModel from '../models/photographerOtpModel'
+import photographerOtpModel from '../models/photographerOtpModel.js'
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
 
@@ -81,7 +81,7 @@ const sendVerifyMail = async (name, email, photographer_id) => {
         const mailOptions = {
             from:process.env.FROM_EMAIL,
             to:email,
-            subject:"Email Verification - OTP",
+            subject:"Email Verification - OTP as Photographer",
             html:`<p>Hi ${name}</p>
                   <p>Your OTP for email verification is <strong>${otp}</strong>.</p>
                   <p>Please enter this OTP within the next 1 minute to verify your email.</p>`
@@ -123,7 +123,16 @@ const verifyPhotographerOtp = async (req, res) => {
     }
 }
 
+const verifyLoginPhotographer = async (req, res) => {
+    try {
+        
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerPhotographer,
-    verifyPhotographerOtp
+    verifyPhotographerOtp,
+    verifyLoginPhotographer
 }
