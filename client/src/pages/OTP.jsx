@@ -10,6 +10,8 @@ const OTP = () => {
     const [otp, setOtp] = useState(new Array(length).fill(''))
     const [timer, setTimer] = useState(60)
     const [startTime, setStartTime] = useState(null)
+    const [fieldErrors, setFieldErrors] = useState(new Array(length).fill(''))
+    const [globalErrorMsg, setGlobalErrorMsg] = useState('')
     const inputsRef = useRef([])
 
     const navigate = useNavigate()
@@ -24,6 +26,10 @@ const OTP = () => {
             const newOtp = [...otp]
             newOtp[index] = value
             setOtp(newOtp)
+
+            const newFieldErrors = [...fieldErrors]
+            newFieldErrors[index] = ''
+            setFieldErrors(newFieldErrors)
 
             if(value && index < length - 1){
                 inputsRef.current[index + 1].focus()
@@ -85,6 +91,25 @@ const OTP = () => {
     const handleVerifyOtp = async (event) => {
         event.preventDefault()
 
+        let hasError = false
+        const newFieldErrors = [...fieldErrors]
+
+        otp.forEach((digit, index) => {
+            if(!digit || isNaN(digit)){
+                newFieldErrors[index] = 'Required'
+                hasError = true
+            }else{
+                newFieldErrors[index] = ''
+            }
+        })
+
+        setFieldErrors(newFieldErrors)
+
+        if(hasError){
+            setGlobalErrorMsg('Please fill in all OTP digits')
+            return
+        }
+
         try {
             const enteredOtp = otp.join('')
             const {data} = await axios.post(`${backendUrl}/api/user/verify-otp`, {userId, otp:enteredOtp})
@@ -94,10 +119,14 @@ const OTP = () => {
                 setToken(data.token)
                 navigate('/')
             }else{
-                alert(data.message)
+                setGlobalErrorMsg(data.message)
             }
         } catch (error) {
-            alert(error.message)
+            if(error.response.data.message){
+                setGlobalErrorMsg(error.response.data.message)
+            }else{
+                setGlobalErrorMsg(data.message)
+            }
         }
     }
 
@@ -112,20 +141,40 @@ const OTP = () => {
                 startTimer()
                 setTimer(60)
             }else{
-                alert(data.message)
+                setGlobalErrorMsg(data.message)
             }
         } catch (error) {
-            alert(error.message)
+            if(error.response.data.message){
+                setGlobalErrorMsg(error.response.data.message)
+            }else{
+                setGlobalErrorMsg(error.message)
+            }
         }
     }
+
+    useEffect(() => {
+        if(globalErrorMsg){
+            const timer = setTimeout(() => setGlobalErrorMsg(''), 5000);
+            return () => clearTimeout(timer)
+        }
+    },[globalErrorMsg])
+
   return (
     <div className='min-h-screen flex items-center justify-center bg-black overflow-x-hidden'>
       <form action="" onSubmit={handleVerifyOtp} className='min-w-[340px]'>
         <div className='border border-green-600 p-8 rounded-2xl space-y-5'>
             <p className='text-center text-2xl font-bold text-green-600'>OTP</p>
+            {globalErrorMsg && (
+                <p className='text-center text-red-500 text-sm block mt-1'>{globalErrorMsg}</p>
+            )}
             <div className='flex justify-around'>
                 {otp.map((value, index) => (
-                    <input key={index} ref={(el) => (inputsRef.current[index] = el)} className='w-[40px] text-center border border-green-600 p-2 outline-none rounded  text-md font-bold text-green-600' type="text" inputMode='numeric' maxLength={1} value={value} onChange={(e) => handleChange(e.target.value, index)} onKeyDown={(e) => handleKeyDown(e, index)} />
+                    <div>
+                        <input key={index} ref={(el) => (inputsRef.current[index] = el)} className={`w-[40px] text-center border p-2 outline-none rounded text-md font-bold text-green-600 ${fieldErrors[index] ? 'border-red-500' : 'border-green-600'}`} type="text" inputMode='numeric' maxLength={1} value={value} onChange={(e) => handleChange(e.target.value, index)} onKeyDown={(e) => handleKeyDown(e, index)} />
+                        {fieldErrors[index] && (
+                            <span className='text-red-500 text-xs block mt-1'>{fieldErrors[index]}</span>
+                        )}
+                    </div>
                 ))}
             </div>
 

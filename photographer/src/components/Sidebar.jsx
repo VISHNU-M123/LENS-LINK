@@ -120,15 +120,15 @@ const Sidebar = ({showItems, hideLogoSection = false}) => {
                     </li>
                 )}
                 <li className={`${showItems ? 'pr-[20px]' : 'p-0'}`}>
-                    <a href="" onClick={() => navigate('/')} className={`flex items-center py-[12px] pr-[10px] pl-[20px] rounded-[0_100px_100px_0] ${isActive('/') ? 'bg-[#0f1015]' : ''} relative`}>
-                        {isActive('/') && (
+                    <a href="" onClick={() => navigate('/dashboard')} className={`flex items-center py-[12px] pr-[10px] pl-[20px] rounded-[0_100px_100px_0] ${isActive('/dashboard') ? 'bg-[#0f1015]' : ''} relative`}>
+                        {isActive('/dashboard') && (
                             <div className='absolute left-0 top-0 bg-[#0090e7] w-[3px] h-full'></div>
                         )}
                         <span className='w-[31px] h-[31px] bg-[#6c7293]/20 rounded-full flex items-center justify-center mr-[8px]'>
                             <MdOutlineSpeed className='text-[#8f5fe8]' />
                         </span>
                         {showItems && (
-                            <span className={`${isActive('/') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>Dashboard</span>
+                            <span className={`${isActive('/dashboard') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>Dashboard</span>
                         )}
                     </a>
                 </li>

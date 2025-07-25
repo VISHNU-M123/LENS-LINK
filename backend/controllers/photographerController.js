@@ -123,9 +123,86 @@ const verifyPhotographerOtp = async (req, res) => {
     }
 }
 
+const resendPhotographerOtp = async (req, res) => {
+    try {
+        const {photographerId} = req.body
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Please register again'})
+        }
+
+        const photographer = await photographerModel.findById(photographerId)
+        if(!photographer){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const otp = Math.floor(1000 + Math.random() * 9000).toString()
+
+        await photographerOtpModel.updateOne(
+            {photographer_id: photographerId},
+            {$set:{otp: otp, createdAt: new Date()}},
+            {upsert: true}
+        )
+
+        const transporter = nodemailer.createTransport({
+            host:process.env.SMTP_HOST,
+            port:parseInt(process.env.SMTP_PORT),
+            secure:false,
+            requireTLS:true,
+            auth:{
+                user:process.env.SMTP_USER,
+                pass:process.env.SMTP_PASS
+            }
+        })
+
+        const mailOptions = {
+            from:process.env.FROM_EMAIL,
+            to:photographer.email,
+            subject:"Resend email verification - OTP",
+            html:`<p>Hi ${photographer.name},</p>
+                  <p>Your new OTP for email verification is <strong>${otp}</strong>.</p>
+                  <p>Please enter this OTP within the next 1 minute to verify your email.</p>`
+        }
+
+        transporter.sendMail(mailOptions, function (error, info){
+            if(error){
+                return res.status(400).json({success:false, message:'Failed to resend OTP. Please try again later.'})
+            }else{
+                return res.status(200).json({success:true, message:'OTP has been resend successfully'})
+            }
+        })
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 const verifyLoginPhotographer = async (req, res) => {
     try {
-        
+        const {email, password} = req.body;
+        if(!email || email.trim() === '' || !password || password.trim() === ''){
+            return res.status(400).json({success:false, message:'Please provide email and password'})
+        }
+
+        const photographerData = await photographerModel.findOne({email:email})
+
+        if(!photographerData){
+            return res.status(400).json({success:false, message:'Invalid email or password'})
+        }
+
+        const passwordMatch = await bcrypt.compare(password, photographerData.password)
+        if(passwordMatch){
+            if(photographerData.is_verified === false){
+                return res.status(400).json({success:false, message:'Photographer not verified'})
+            }else{
+                if(photographerData.is_blocked === 'Active'){
+                    const photographerToken = jwt.sign({id:photographerData._id}, process.env.JWT_SECRET, {expiresIn:'7d'})
+                    return res.status(200).json({success:true, photographerToken})
+                }else{
+                    return res.status(400).json({success:false, message:'You are blocked'})
+                }
+            }
+        }else{
+            return res.status(400).json({success:false, message:'invalid credentials'})
+        }
     } catch (error) {
         res.status(500).json({success:false, message:error.message})
     }
@@ -134,5 +211,6 @@ const verifyLoginPhotographer = async (req, res) => {
 export {
     registerPhotographer,
     verifyPhotographerOtp,
+    resendPhotographerOtp,
     verifyLoginPhotographer
 }
