@@ -26,6 +26,18 @@ const photographerSchema = new mongoose.Schema({
         type:Number,
         default:0
     },
+    studioName: {
+        type:String,
+        required:true
+    },
+    location: {
+        type:String,
+        required:true
+    },
+    is_available: {
+        type:Boolean,
+        default:true
+    },
     is_verified: {
         type:Boolean,
         default:false
@@ -34,6 +46,10 @@ const photographerSchema = new mongoose.Schema({
         type:String,
         enum:["Active", "Blocked"],
         default:"Active"
+    },
+    createdAt: {
+        type:Date,
+        default:Date.now
     }
 })
 

@@ -29,6 +29,14 @@ const Navbar = () => {
               HOME
             </NavLink>
 
+            <NavLink to='/allPhotographers' className={({isActive}) =>
+              isActive
+              ? 'font-bold border-b-[3px] border-b-[#ec0a30] py-8 text-white'
+              : 'font-bold border-b-[3px] border-b-transparent hover:border-b-[3px] hover:border-[#ec0a30] py-8 cursor-pointer text-white'
+            }>
+              PHOTOGRAPHERS
+            </NavLink>
+
             <NavLink to='/about' className={({isActive}) => 
               isActive
               ? 'font-bold border-b-[3px] border-b-[#ec0a30] py-8 text-white'
@@ -109,6 +117,9 @@ const Navbar = () => {
             <ul>
               <NavLink to='/'>
                 <li className='py-[8px] px-[30px] cursor-pointer hover:bg-[#ec0a30] active:bg-[#ec0a30] text-[#fff] text-[14px] font-[400]'>Home</li>
+              </NavLink>
+              <NavLink to='/allPhotographers'>
+                <li className='py-[8px] px-[30px] cursor-pointer hover:bg-[#ec0a30] active:bg-[#ec0a30] text-[#fff] text-[14px] font-[400]'>Photographers</li>
               </NavLink>
               <NavLink to='/about'>
                 <li className='py-[8px] px-[30px] cursor-pointer hover:bg-[#ec0a30] active:bg-[#ec0a30] text-[#fff] text-[14px] font-[400]'>About</li>
