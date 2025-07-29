@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import otpModel from '../models/otpModel.js';
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
+import photographerModel from '../models/photographerModel.js';
 
 const registerUser = async (req, res) => {
     try {
@@ -209,9 +210,22 @@ const verifyLogin = async (req, res) => {
     }
 }
 
+const loadAllPhotographer = async (req, res) => {
+    try {
+        const photographers = await photographerModel.find({is_blocked: 'Active'})
+        if(!photographers){
+            return res.status(400).json({success:false, message:'No active photograpehrs'})
+        }
+        res.status(200).json({success:true, photographers})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerUser,
     verifyOtp,
     resendOtp,
-    verifyLogin
+    verifyLogin,
+    loadAllPhotographer
 }

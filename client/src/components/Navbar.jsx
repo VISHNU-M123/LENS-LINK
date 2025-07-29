@@ -1,23 +1,46 @@
-import React, { useState } from 'react'
-import logo from '../assets/logo.png'
+import React, { useEffect, useRef, useState } from 'react'
+import logo from '../assets/logo-main-3.png'
 import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
 import {NavLink, useNavigate} from 'react-router-dom'
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { MdOutlineArrowRight } from "react-icons/md";
-
+import user from '../assets/client-3.jpg'
+import { IoIosArrowForward } from "react-icons/io";
+import { FaUser } from "react-icons/fa6";
+import { IoMdSettings } from "react-icons/io";
+import { IoIosHelpCircle } from "react-icons/io";
+import { MdLogout } from "react-icons/md";
 
 const Navbar = () => {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobilePagesOpen, setMobilePagesOpen] = useState(false)
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+
+  const dropdownRef = useRef(null)
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target)){
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  },[])
+
   return (
     <>
       <div className='items-center h-[90px] lg:grid lg:grid-cols-[1.3fr_3fr_1fr] flex justify-between mx-5 lg:mx-0 bg-transparent'>
         <div>
-          <img onClick={() => navigate('/')} className='mx-auto cursor-pointer' src={logo} alt="" />
+          <img onClick={() => navigate('/')} className='mx-auto cursor-pointer h-[90px]' src={logo} alt="" />
         </div>
         <div className='hidden lg:block'>
           <ul className='flex justify-between'>
@@ -100,8 +123,42 @@ const Navbar = () => {
         </div>
 
         <div className='flex items-center gap-3'>
-          <div className='bg-[#ec0a30] w-12 h-12 flex items-center justify-center text-md text-white mx-auto'>
+          <div className='bg-[#ec0a30] w-12 h-12 flex items-center justify-center text-md text-white mx-auto mr-0'>
             <CiSearch strokeWidth={3} />
+          </div>
+          <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className='bg-[#ec0a30] w-12 h-12 rounded-full flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0'>
+            <img src={user} className='w-full h-full object-cover rounded-full' alt="" />
+          </div>
+
+          {/* dropdown menu for the profile */}
+          <div ref={dropdownRef} className={`absolute top-[10%] right-[5%] w-[320px]  overflow-hidden z-10 transition-all duration-500 ease-in-out ${isDropdownOpen ? 'opacity-100 max-h-[400px]' : 'opacity-0 max-h-0'}`}>
+            <div className='bg-white p-[20px] m-[10px]'>
+              <div className='flex items-center'>
+                <img src={user} alt="" className='w-[60px] rounded-full mr-[15px]' />
+                <h1 className='font-[500]'>user name</h1>
+              </div>
+              <hr className='border-0 h-[1px] w-[100%] bg-[#ccc] mt-[15px] mb-[10px]'/>
+              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
+                <FaUser className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+                <p className='w-[100%] hover:font-[600]'>Edit profile</p>
+                <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
+              </a>
+              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
+                <IoMdSettings className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+                <p className='w-[100%] hover:font-[600]'>Settings & privacy</p>
+                <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
+              </a>
+              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
+                <IoIosHelpCircle className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+                <p className='w-[100%] hover:font-[600]'>Help & support</p>
+                <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
+              </a>
+              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
+                <MdLogout className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+                <p className='w-[100%] hover:font-[600]'>Logout</p>
+                <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
+              </a>
+            </div>
           </div>
 
           <div className='block lg:hidden cursor-pointer' onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>

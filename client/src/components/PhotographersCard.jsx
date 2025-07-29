@@ -7,7 +7,7 @@ import { IoStar } from "react-icons/io5";
 import { LuMessageCircle } from "react-icons/lu";
 import { IoCameraOutline } from "react-icons/io5";
 
-const PhotographersCard = () => {
+const PhotographersCard = ({photographer}) => {
 
     const [imageError, setImageError] = useState(false)
   return (
@@ -40,7 +40,7 @@ const PhotographersCard = () => {
 
         <div className='p-5'>
             <div className='mb-3'>
-                <h3 className='text-xl font-bold text-white mb-1 truncate'>Photographer name</h3>
+                <h3 className='text-xl font-bold text-white mb-1 truncate'>{photographer.name}</h3>
                 <p className='text-zinc-300 font-medium mb-1 truncate'>Studio name</p>
                 <div className='flex items-center text-zinc-400 text-sm mb-2'>
                     <FiMapPin className='w-4 h-4 mr-1' />
