@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import logo from '../assets/logo-main-3.png'
 import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -11,20 +11,27 @@ import { FaUser } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { IoIosHelpCircle } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
+import { AppContext } from '../context/AppContext';
 
 const Navbar = () => {
+
+  const {token, setToken, userData} = useContext(AppContext)
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [mobilePagesOpen, setMobilePagesOpen] = useState(false)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isLoginDropdownOpen, setIsLoginDropdownOpen] = useState(false)
 
   const dropdownRef = useRef(null)
+  const togglerRef = useRef(null)
+  const loginDropdownRef = useRef(null)
+  const loginToggleRef = useRef(null)
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if(dropdownRef.current && !dropdownRef.current.contains(event.target)){
+      if(dropdownRef.current && !dropdownRef.current.contains(event.target) && togglerRef.current && !togglerRef.current.contains(event.target)){
         setIsDropdownOpen(false)
       }
     }
@@ -33,6 +40,19 @@ const Navbar = () => {
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
+    }
+  },[])
+
+  useEffect(() => {
+    const handleLoginClickOutside = (event) => {
+      if(loginDropdownRef.current && !loginDropdownRef.current.contains(event.target) && loginToggleRef.current && !loginToggleRef.current.contains(event.target)){
+        setIsLoginDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleLoginClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleLoginClickOutside)
     }
   },[])
 
@@ -123,38 +143,56 @@ const Navbar = () => {
         </div>
 
         <div className='flex items-center gap-3'>
-          <div className='bg-[#ec0a30] w-12 h-12 flex items-center justify-center text-md text-white mx-auto mr-0'>
+          <div className='bg-[#ec0a30] w-8 h-8 md:w-12 md:h-12 flex items-center justify-center text-md text-white mx-auto mr-0'>
             <CiSearch strokeWidth={3} />
           </div>
-          <div onClick={() => setIsDropdownOpen(!isDropdownOpen)} className='bg-[#ec0a30] w-12 h-12 rounded-full flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0'>
-            <img src={user} className='w-full h-full object-cover rounded-full' alt="" />
+          {token && userData 
+            ?
+            <div ref={togglerRef} onClick={() => setIsDropdownOpen(!isDropdownOpen)} className='bg-[#ec0a30] md:w-12 md:h-12 w-8 h-8 rounded-full flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0 cursor-pointer'>
+              <img src={user} className='w-full h-full object-cover rounded-full' alt="" />
+            </div>
+            :
+            <button ref={loginToggleRef} onClick={() => setIsLoginDropdownOpen(!isLoginDropdownOpen)} className='bg-[#ec0a30] rounded-full flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0 cursor-pointer sm:px-8 sm:py-2 p-2'>
+              <span className='hidden sm:inline'>Login</span>
+              <FaUser className='sm:hidden w-4 h-4' />
+            </button>
+          }
+
+          {/* login dropdown */}
+          <div ref={loginDropdownRef} className={`absolute top-[10%] right-[5%] w-[320px]  overflow-hidden z-10 transition-all duration-500 ease-in-out ${isLoginDropdownOpen ? 'opacity-100 max-h-[400px]' : 'opacity-0 max-h-0'}`}>
+            <div className='bg-[rgba(0,0,0,0.84)] p-[20px] m-[10px]'>
+              <div className='flex flex-col items-center gap-3'>
+                <button onClick={() => navigate('/login')} className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as user</button>
+                <button className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as photographer</button>
+              </div>
+            </div>
           </div>
 
           {/* dropdown menu for the profile */}
           <div ref={dropdownRef} className={`absolute top-[10%] right-[5%] w-[320px]  overflow-hidden z-10 transition-all duration-500 ease-in-out ${isDropdownOpen ? 'opacity-100 max-h-[400px]' : 'opacity-0 max-h-0'}`}>
-            <div className='bg-white p-[20px] m-[10px]'>
+            <div className='bg-[rgba(0,0,0,0.84)] p-[20px] m-[10px]'>
               <div className='flex items-center'>
                 <img src={user} alt="" className='w-[60px] rounded-full mr-[15px]' />
-                <h1 className='font-[500]'>user name</h1>
+                <h1 className='font-[500] text-[#ffff]'>user name</h1>
               </div>
               <hr className='border-0 h-[1px] w-[100%] bg-[#ccc] mt-[15px] mb-[10px]'/>
-              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
-                <FaUser className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+              <a href="" className='group flex items-center text-decoration-none text-[#ffff] my-[12px]'>
+                <FaUser className='w-[48px] h-auto bg-[#ec0a30] rounded-full p-[8px] mr-[15px]' />
                 <p className='w-[100%] hover:font-[600]'>Edit profile</p>
                 <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
               </a>
-              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
-                <IoMdSettings className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+              <a href="" className='group flex items-center text-decoration-none text-[#ffff] my-[12px]'>
+                <IoMdSettings className='w-[48px] h-auto bg-[#ec0a30] rounded-full p-[8px] mr-[15px]' />
                 <p className='w-[100%] hover:font-[600]'>Settings & privacy</p>
                 <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
               </a>
-              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
-                <IoIosHelpCircle className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+              <a href="" className='group flex items-center text-decoration-none text-[#ffff] my-[12px]'>
+                <IoIosHelpCircle className='w-[48px] h-auto bg-[#ec0a30] rounded-full p-[8px] mr-[15px]' />
                 <p className='w-[100%] hover:font-[600]'>Help & support</p>
                 <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
               </a>
-              <a href="" className='group flex items-center text-decoration-none text-[#525252] my-[12px]'>
-                <MdLogout className='w-[48px] h-auto bg-[#e5e5e5] rounded-full p-[8px] mr-[15px]' />
+              <a href="" className='group flex items-center text-decoration-none text-[#ffff] my-[12px]'>
+                <MdLogout className='w-[48px] h-auto bg-[#ec0a30] rounded-full p-[8px] mr-[15px]' />
                 <p className='w-[100%] hover:font-[600]'>Logout</p>
                 <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
               </a>

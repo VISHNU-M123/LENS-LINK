@@ -222,10 +222,26 @@ const loadAllPhotographer = async (req, res) => {
     }
 }
 
+const getUserProfile = async (req, res) => {
+    try {
+        const userId = req.userId
+
+        const userData = await userModel.findById(userId).select('-password')
+        if(!userData){
+            return res.status(400).json({success:false, message:'User not found'})
+        }
+
+        res.status(200).json({success:true, userData})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerUser,
     verifyOtp,
     resendOtp,
     verifyLogin,
-    loadAllPhotographer
+    loadAllPhotographer,
+    getUserProfile
 }
