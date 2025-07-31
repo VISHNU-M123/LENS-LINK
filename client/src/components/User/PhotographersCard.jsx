@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import profileImage from '../assets/cat-5.jpg'
+import profileImage from '../../assets/gallery-8.jpg'
 import { IoEyeOutline } from "react-icons/io5";
 import { FaRegHeart } from "react-icons/fa";
 import { FiMapPin } from "react-icons/fi";

@@ -1,17 +1,17 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
-import logo from '../assets/logo-main-3.png'
+import logo from '../../assets/logo-main-3.png'
 import { CiSearch } from "react-icons/ci";
 import { GiHamburgerMenu } from "react-icons/gi";
 import {NavLink, useNavigate} from 'react-router-dom'
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import { MdOutlineArrowRight } from "react-icons/md";
-import user from '../assets/client-3.jpg'
+import user from '../../assets/client-3.jpg'
 import { IoIosArrowForward } from "react-icons/io";
 import { FaUser } from "react-icons/fa6";
 import { IoMdSettings } from "react-icons/io";
 import { IoIosHelpCircle } from "react-icons/io";
 import { MdLogout } from "react-icons/md";
-import { AppContext } from '../context/AppContext';
+import { AppContext } from '../../context/AppContext';
 
 const Navbar = () => {
 
@@ -163,7 +163,7 @@ const Navbar = () => {
             <div className='bg-[rgba(0,0,0,0.84)] p-[20px] m-[10px]'>
               <div className='flex flex-col items-center gap-3'>
                 <button onClick={() => navigate('/login')} className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as user</button>
-                <button className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as photographer</button>
+                <button onClick={() => navigate('/login-photographer')} className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as photographer</button>
               </div>
             </div>
           </div>

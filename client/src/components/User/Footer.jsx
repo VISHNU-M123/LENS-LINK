@@ -1,12 +1,12 @@
 import React from 'react'
-import footerLogo from '../assets/f-logo.png'
+import footerLogo from '../../assets/f-logo.png'
 import { FaFacebookF } from "react-icons/fa";
 import { FaTwitter } from "react-icons/fa";
 import { FaYoutube } from "react-icons/fa";
 import { FaInstagram } from "react-icons/fa";
-import instaImgOne from '../assets/insta-1.jpg'
-import instaImgTwo from '../assets/insta-2.jpg'
-import instaImgThree from '../assets/insta-3.jpg'
+import instaImgOne from '../../assets/insta-1.jpg'
+import instaImgTwo from '../../assets/insta-2.jpg'
+import instaImgThree from '../../assets/insta-3.jpg'
 import { IoIosSend } from "react-icons/io";
 
 const Footer = () => {

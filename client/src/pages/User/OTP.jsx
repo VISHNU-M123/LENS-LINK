@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useContext } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { AppContext } from '../context/AppContext'
+import { AppContext } from '../../context/AppContext'
 import axios from 'axios'
 
 const OTP = () => {

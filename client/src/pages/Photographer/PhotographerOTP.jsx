@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
-import { AppContext } from '../context/AppContext';
+// import { AppContext } from '../context/AppContext';
 import axios from 'axios';
+import { PhotographerContext } from '../../context/PhotographerContext';
 
-const OTP = () => {
+const PhotographerOTP = () => {
 
   const length = 4;
   const [otp, setOtp] = useState(new Array(length).fill(''))
@@ -18,7 +19,7 @@ const OTP = () => {
   const searchParams = new URLSearchParams(location.search)
   const photographerId = searchParams.get('photographerId')
 
-  const {backendUrl, photographerToken, setPhotographerToken} = useContext(AppContext)
+  const {backendUrl, photographerToken, setPhotographerToken} = useContext(PhotographerContext)
 
   const handleChange = (value, index) => {
     if(!isNaN(value) && value.length <= 1){
@@ -183,4 +184,4 @@ const OTP = () => {
   )
 }
 
-export default OTP
+export default PhotographerOTP

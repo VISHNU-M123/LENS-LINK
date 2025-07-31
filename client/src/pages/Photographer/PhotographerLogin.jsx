@@ -1,9 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AppContext } from '../context/AppContext'
+// import { AppContext } from '../context/AppContext'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { PhotographerContext } from '../../context/PhotographerContext'
 
-const Login = () => {
+const PhotographerLogin = () => {
 
   const navigate = useNavigate()
   const [state, setState] = useState('Login')
@@ -14,7 +15,7 @@ const Login = () => {
   const [showErrorMsg, setShowErrorMsg] = useState({name:'', email:'', mobile:'', password:''})
   const [globalErrorMsg, setGlobalErrorMsg] = useState('')
 
-  const {backendUrl, photographerToken, setPhotographerToken} = useContext(AppContext)
+  const {backendUrl, photographerToken, setPhotographerToken} = useContext(PhotographerContext)
 
   const handleFieldChange = (fieldName, setField) => (e) => {
     const value = e.target.value
@@ -194,4 +195,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default PhotographerLogin

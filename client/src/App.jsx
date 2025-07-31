@@ -1,11 +1,14 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
-import Login from './pages/Login'
-import OTP from './pages/OTP'
-import ForgotPassword from './pages/ForgotPassword'
-import AllPhotographers from './pages/AllPhotographers'
-import ProfilePage from './pages/ProfilePage'
+import AllPhotographers from './pages/User/AllPhotographers'
+import Login from './pages/User/Login'
+import OTP from './pages/User/OTP'
+import ForgotPassword from './pages/User/ForgotPassword'
+import ProfilePage from './pages/User/ProfilePage'
+import Dashboard from './pages/Photographer/Dashboard'
+import PhotographerLogin from './pages/Photographer/PhotographerLogin'
+import PhotographerOTP from './pages/Photographer/PhotographerOTP'
 
 const App = () => {
   return (
@@ -17,6 +20,11 @@ const App = () => {
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/allPhotographers' element={<AllPhotographers/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
+
+        {/* photographers routes */}
+        <Route path='/dashboard' element={<Dashboard/>}/>
+        <Route path='/login-photographer' element={<PhotographerLogin/>}/>
+        <Route path='/verify-photographerOtp' element={<PhotographerOTP/>}/>
       </Routes>
     </div>
   )

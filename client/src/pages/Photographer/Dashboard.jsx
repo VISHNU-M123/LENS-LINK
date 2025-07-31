@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import Sidebar from "../components/Sidebar";
-import Navbar from "../components/Navbar";
+// import Sidebar from "../components/Sidebar";
+// import Navbar from "../components/Navbar";
 import { GoArrowUpRight } from "react-icons/go";
 import { GoArrowDownLeft } from "react-icons/go";
 import { BsFileEarmarkTextFill } from "react-icons/bs";
@@ -11,29 +11,31 @@ import { MdPieChart } from "react-icons/md";
 import { IoLogoCodepen } from "react-icons/io";
 import { MdCardTravel } from "react-icons/md";
 import { FiMonitor } from "react-icons/fi";
-import userOne from '../assets/face1.jpg'
-import userTwo from '../assets/face2.jpg'
-import userThree from '../assets/face5.jpg'
-import userFour from '../assets/face3.jpg'
-import userFive from '../assets/face4.jpg'
-import msgUserOne from '../assets/face6.jpg'
-import msgUserTwo from '../assets/face8.jpg'
-import msgUserThree from '../assets/face9.jpg'
-import msgUserFour from '../assets/face11.jpg'
+import userOne from '../../assets/face1.jpg'
+import userTwo from '../../assets/face2.jpg'
+import userThree from '../../assets/face5.jpg'
+import userFour from '../../assets/face3.jpg'
+import userFive from '../../assets/face4.jpg'
+import msgUserOne from '../../assets/face6.jpg'
+import msgUserTwo from '../../assets/face8.jpg'
+import msgUserThree from '../../assets/face9.jpg'
+import msgUserFour from '../../assets/face11.jpg'
 import { MdKeyboardArrowLeft } from "react-icons/md";
 import { MdKeyboardArrowRight } from "react-icons/md";
-import dashSlideImgOne from '../assets/img_5.jpg'
-import dashSlideImgTwo from '../assets/img_6.jpg'
-import dashSlideImgThree from '../assets/Rectangle.jpg'
-import slideUserOne from '../assets/face12.jpg'
+import dashSlideImgOne from '../../assets/img_5.jpg'
+import dashSlideImgTwo from '../../assets/img_6.jpg'
+import dashSlideImgThree from '../../assets/Rectangle.jpg'
+import slideUserOne from '../../assets/face12.jpg'
 import { AiFillCloseSquare } from "react-icons/ai";
 import { IoMdCheckmark } from "react-icons/io";
-import usImg from '../assets/us.svg'
-import gerImg from '../assets/ger.svg'
-import ausImg from '../assets/au.svg'
-import ukImg from '../assets/uk.svg'
-import romImg from '../assets/ro.svg'
-import brzImg from '../assets/br.svg'
+import usImg from '../../assets/us.svg'
+import gerImg from '../../assets/ger.svg'
+import ausImg from '../../assets/au.svg'
+import ukImg from '../../assets/uk.svg'
+import romImg from '../../assets/ro.svg'
+import brzImg from '../../assets/br.svg'
+import Sidebar from "../../components/Photographer/Sidebar";
+import Navbar from "../../components/Photographer/Navbar";
 
 const Dashboard = () => {
 

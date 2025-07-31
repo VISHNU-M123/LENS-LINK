@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
-import logo from '../assets/logo.svg'
-import logo_mini from '../assets/logo-mini.svg'
-import profileIcon from '../assets/face15.jpg'
+import logo from '../../assets/logo.svg'
+import logo_mini from '../../assets/logo-mini.svg'
+import profileIcon from '../../assets/face15.jpg'
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { IoMdSettings } from "react-icons/io";
 import { AiOutlineInfoCircle } from "react-icons/ai";

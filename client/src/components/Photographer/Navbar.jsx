@@ -1,18 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react'
-import logo_mini from '../assets/logo-mini.svg'
+import logo_mini from '../../assets/logo-mini.svg'
 import { MdOutlineMenu } from "react-icons/md";
 import { FaRegFile } from "react-icons/fa6";
 import { PiGlobeBold } from "react-icons/pi";
 import { MdLayers } from "react-icons/md";
 import { IoGridSharp } from "react-icons/io5";
 import { MdEmail } from "react-icons/md";
-import faceImgOne from '../assets/face4.jpg'
+import faceImgOne from '../../assets/face4.jpg'
 import { FaBell } from "react-icons/fa";
 import { FaCalendarDay } from "react-icons/fa";
 import { IoMdSettings } from "react-icons/io";
 import { FaLink } from "react-icons/fa6";
 import { IoMdArrowDropdown } from "react-icons/io";
-import profileIcon from '../assets/face15.jpg'
+import profileIcon from '../../assets/face15.jpg'
 import { MdLogout } from "react-icons/md";
 import { MdFormatLineSpacing } from "react-icons/md";
 import Sidebar from './Sidebar';

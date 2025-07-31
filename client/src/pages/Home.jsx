@@ -1,16 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Navbar from '../components/Navbar'
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
 import firstCorousel from '../assets/hero-1.jpg'
 import secondCorousel from '../assets/banner-1.jpg'
-import ServicesCard from '../components/ServicesCard';
 import shootingImg from '../assets/service-1.jpg'
 import videoImg from '../assets/service-2.jpg'
 import editingImg from '../assets/service-3.jpg'
-import CategoryCard from '../components/CategoryCard';
 import categoryImgOne from '../assets/cat-1.jpg'
 import categoryImgTwo from '../assets/cat-2.jpg'
 import categoryImgThree from '../assets/cat-3.jpg'
@@ -28,8 +25,11 @@ import workImg9 from '../assets/pf-9.jpg'
 import workImg10 from '../assets/pf-10.jpg'
 import workImg11 from '../assets/pf-11.jpg'
 import {Plus} from 'lucide-react'
-import Footer from '../components/Footer';
 import axios from 'axios'
+import Navbar from '../components/User/Navbar';
+import ServicesCard from '../components/User/ServicesCard';
+import CategoryCard from '../components/User/CategoryCard';
+import Footer from '../components/User/Footer';
 
 const Home = () => {
 
