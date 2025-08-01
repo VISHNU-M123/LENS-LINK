@@ -79,19 +79,22 @@ const AllPhotographers = () => {
                                 <div>
                                     <label>Photographer Type</label>
                                     <div className='relative'>
-                                        <select className='w-full px-4 py-2 border border-gray-400 rounded-md outline-none text-[15px]'>
+                                        <select className='appearance-none w-full px-4 py-2 border border-gray-400 rounded-md outline-none text-[15px]'>
                                             <option value="">All Types</option>
                                             <option value="wedding">Wedding</option>
                                             <option value="portrait">Portrait</option>
                                             <option value="event">Event</option>
                                             <option value="commercial">Commercial</option>
                                         </select>
+                                        <div className='pointer-events-none absolute right-3 top-1/2 -translate-y-1/2'>
+                                            <FaChevronDown size={12} className='text-gray-500'/>
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div className='flex gap-2 pt-4'>
-                                    <button className='flex-1 px-4 py-2 bg-gray-100 text-gray-700 rounded-md font-medium transition-colors'>Clear</button>
-                                    <button className='flex-1 px-4 py-2 bg-[#ec0a30] text-white rounded-md font-medium transition-colors'>Apply</button>
+                                    <button className='flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-300 text-gray-700 rounded-md font-medium transition-colors cursor-pointer'>Clear</button>
+                                    <button className='flex-1 px-4 py-2 bg-[#ec0a30] hover:bg-[#701313] text-white rounded-md font-medium transition-colors cursor-pointer'>Apply</button>
                                 </div>
                             </div>
                         </div>

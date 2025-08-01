@@ -9,6 +9,7 @@ import ProfilePage from './pages/User/ProfilePage'
 import Dashboard from './pages/Photographer/Dashboard'
 import PhotographerLogin from './pages/Photographer/PhotographerLogin'
 import PhotographerOTP from './pages/Photographer/PhotographerOTP'
+import PhotographerProfilePage from './pages/User/PhotographerProfilePage'
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/allPhotographers' element={<AllPhotographers/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
+        <Route path='/photographer-profile' element={<PhotographerProfilePage/>}/>
 
         {/* photographers routes */}
         <Route path='/dashboard' element={<Dashboard/>}/>
