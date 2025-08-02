@@ -22,10 +22,10 @@ const photographerSchema = new mongoose.Schema({
         type:String,
         default:''
     },
-    experience: {
-        type:Number,
-        default:0
-    },
+    // experience: {
+    //     type:Number,
+    //     default:0
+    // },
     // studioName: {
     //     type:String,
     //     required:true

@@ -152,7 +152,7 @@ const Navbar = () => {
               <img src={user} className='w-full h-full object-cover rounded-full' alt="" />
             </div>
             :
-            <button ref={loginToggleRef} onClick={() => setIsLoginDropdownOpen(!isLoginDropdownOpen)} className='bg-[#ec0a30] rounded-full flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0 cursor-pointer sm:px-8 sm:py-2 p-2'>
+            <button ref={loginToggleRef} onClick={() => setIsLoginDropdownOpen(!isLoginDropdownOpen)} className='bg-[#ec0a30] hover:bg-[#701313] rounded-md flex items-center justify-center overflow-hidden text-md text-white mx-auto ml-0 cursor-pointer sm:px-8 sm:py-2 p-2'>
               <span className='hidden sm:inline'>Login</span>
               <FaUser className='sm:hidden w-4 h-4' />
             </button>
@@ -162,8 +162,8 @@ const Navbar = () => {
           <div ref={loginDropdownRef} className={`absolute top-[10%] right-[5%] w-[320px]  overflow-hidden z-10 transition-all duration-500 ease-in-out ${isLoginDropdownOpen ? 'opacity-100 max-h-[400px]' : 'opacity-0 max-h-0'}`}>
             <div className='bg-[rgba(0,0,0,0.84)] p-[20px] m-[10px]'>
               <div className='flex flex-col items-center gap-3'>
-                <button onClick={() => navigate('/login')} className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as user</button>
-                <button onClick={() => navigate('/login-photographer')} className='text-white bg-[#ec0a30] px-3 py-1 w-full rounded-full'>Login as photographer</button>
+                <button onClick={() => navigate('/login')} className='text-white bg-[#ec0a30] hover:bg-[#701313] px-3 py-2 w-full rounded-md cursor-pointer'>Login as user</button>
+                <button onClick={() => navigate('/login-photographer')} className='text-white bg-[#ec0a30] hover:bg-[#701313] px-3 py-2 w-full rounded-md cursor-pointer'>Login as photographer</button>
               </div>
             </div>
           </div>
