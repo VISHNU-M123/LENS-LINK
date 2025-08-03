@@ -10,6 +10,10 @@ import Dashboard from './pages/Photographer/Dashboard'
 import PhotographerLogin from './pages/Photographer/PhotographerLogin'
 import PhotographerOTP from './pages/Photographer/PhotographerOTP'
 import PhotographerProfilePage from './pages/User/PhotographerProfilePage'
+import Gallery from './pages/Gallery'
+import Service from './pages/Photographer/Service'
+import AddService from './pages/Photographer/AddService'
+import EditService from './pages/Photographer/EditService'
 
 const App = () => {
   return (
@@ -22,11 +26,15 @@ const App = () => {
         <Route path='/allPhotographers' element={<AllPhotographers/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
         <Route path='/photographer-profile' element={<PhotographerProfilePage/>}/>
+        <Route path='/gallery' element={<Gallery/>}/>
 
         {/* photographers routes */}
         <Route path='/dashboard' element={<Dashboard/>}/>
         <Route path='/login-photographer' element={<PhotographerLogin/>}/>
         <Route path='/verify-photographerOtp' element={<PhotographerOTP/>}/>
+        <Route path='/service' element={<Service/>}/>
+        <Route path='/add-service' element={<AddService/>}/>
+        <Route path='/edit-service' element={<EditService/>}/>
       </Routes>
     </div>
   )

@@ -16,6 +16,7 @@ import { MdOutlineSecurity } from "react-icons/md";
 import { BiSolidFile } from "react-icons/bi";
 import { BiSolidCategory } from "react-icons/bi";
 import { useLocation, useNavigate } from 'react-router-dom';
+import { GrServices } from "react-icons/gr";
 
 
 const Sidebar = ({showItems, hideLogoSection = false}) => {
@@ -129,6 +130,19 @@ const Sidebar = ({showItems, hideLogoSection = false}) => {
                         </span>
                         {showItems && (
                             <span className={`${isActive('/dashboard') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>Dashboard</span>
+                        )}
+                    </a>
+                </li>
+                <li className={`${showItems ? 'pr-[20px]' : 'p-0'}`}>
+                    <a href="" onClick={() => navigate('/service')} className={`flex items-center py-[12px] pr-[10px] pl-[20px] rounded-[0_100px_100px_0] ${isActive('/service') ? 'bg-[#0f1015]' : ''} relative`}>
+                        {isActive('/service') && (
+                            <div className='absolute left-0 top-0 bg-[#0090e7] w-[3px] h-full'></div>
+                        )}
+                        <span className='w-[31px] h-[31px] bg-[#6c7293]/20 rounded-full flex items-center justify-center mr-[8px]'>
+                            <GrServices className='text-[#B2B5E0]' />
+                        </span>
+                        {showItems && (
+                            <span className={`${isActive('/service') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>service</span>
                         )}
                     </a>
                 </li>

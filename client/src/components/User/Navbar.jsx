@@ -56,6 +56,12 @@ const Navbar = () => {
     }
   },[])
 
+  const logout = () => {
+    setToken(false)
+    localStorage.removeItem('token')
+    navigate('/')
+  }
+
   return (
     <>
       <div className='items-center h-[90px] lg:grid lg:grid-cols-[1.3fr_3fr_1fr] flex justify-between mx-5 lg:mx-0 bg-transparent'>
@@ -193,7 +199,7 @@ const Navbar = () => {
               </a>
               <a href="" className='group flex items-center text-decoration-none text-[#ffff] my-[12px]'>
                 <MdLogout className='w-[48px] h-auto bg-[#ec0a30] rounded-full p-[8px] mr-[15px]' />
-                <p className='w-[100%] hover:font-[600]'>Logout</p>
+                <p onClick={logout} className='w-[100%] hover:font-[600]'>Logout</p>
                 <span className='text-[16px] transition-transform duration-300 group-hover:translate-x-2'><IoIosArrowForward /></span>
               </a>
             </div>

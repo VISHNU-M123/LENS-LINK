@@ -221,8 +221,6 @@ const Home = () => {
       <div className='flex items-center justify-center mt-12'>
         <button className='text-white bg-[#ec0a30] hover:bg-[#701313] text-md font-bold tracking-widest py-3.5 px-24 cursor-pointer'>LOAD MORE</button>
       </div>
-      <button onClick={logout} className='border border-gray-300 p-1 px-4 text-white'>Logout</button>
-
       <Footer/>
     </div>
   )

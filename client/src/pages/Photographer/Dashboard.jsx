@@ -221,7 +221,7 @@ const Dashboard = () => {
         <div className="w-full">
           <Navbar toggleSidebarItems={toggleSidebarItems} showItems={showSidebarItems} />
           <div className="pt-[70px]">
-            <div className="bg-[#000000] py-[30px] px-[28px] w-full">
+            <div className="bg-[#000000] py-[30px] px-[28px] w-full min-h-screen">
 
               {/* first div */}
               <div className="-mx-3 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4">
