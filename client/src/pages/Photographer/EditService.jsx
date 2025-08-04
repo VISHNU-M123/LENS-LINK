@@ -20,7 +20,7 @@ const EditService = () => {
           <Navbar toggleSidebarItems={toggleSidebarItems} showItems={showSidebarItems} />
           <div className="pt-[70px]">
             <div className="bg-[#000000] py-[30px] px-[28px] w-full min-h-screen">
-              <ServiceForm heading='Edit Service' subHeadingCategory = 'Edit Service' mode='edit'/>
+              <ServiceForm heading='Edit Service' subHeadingService = 'Edit Service' mode='edit'/>
             </div>
           </div>
         </div>

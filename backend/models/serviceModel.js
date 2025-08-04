@@ -6,22 +6,31 @@ const serviceSchema = new mongoose.Schema({
         ref:'Photographer',
         required:true
     },
-    name:{
+    serviceName:{
         type:String,
         required:true
     },
-    price:{
-        type:Number,
-        required:true
-    },
-    duration:{
+    serviceDescription:{
         type:String,
         required:true
     },
-    isAvailable:{
-        type:Boolean,
-        default:true
+    servicePrice:{
+        type:String,
+        required:true
     },
+    serviceDuration:{
+        type:String,
+        required:true
+    },
+    serviceStatus:{
+        type:String,
+        enum:["Active", "Blocked"],
+        default:"Active"
+    },
+    // isAvailable:{
+    //     type:Boolean,
+    //     default:true
+    // },
     createdAt:{
         type:Date,
         default:Date.now

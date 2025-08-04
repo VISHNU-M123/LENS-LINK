@@ -4,6 +4,7 @@ import bcrypt from 'bcrypt'
 import photographerOtpModel from '../models/photographerOtpModel.js'
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
+import serviceModel from '../models/serviceModel.js'
 
 const registerPhotographer = async (req, res) => {
     try {
@@ -208,9 +209,89 @@ const verifyLoginPhotographer = async (req, res) => {
     }
 }
 
+const addService = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const serviceName = req.body.serviceName.trim().toLowerCase()
+        const {serviceDescription, servicePrice, serviceDuration, serviceStatus} = req.body
+
+        if(!serviceName || serviceName.trim() === ''){
+            return res.status(400).json({success:false, message:'Service Name is required'})
+        }
+
+        if(!serviceDescription || serviceDescription.trim() === ''){
+            return res.status(400).json({success:false, message:'Service Description is required'})
+        }
+
+        if(!servicePrice || servicePrice.trim() === ''){
+            return res.status(400).json({success:false, message:'Service Price is required'})
+        }
+
+        const priceRangePattern = /^(\d+(\.\d{1,2})?)\s*-\s*(\d+(\.\d{1,2})?)$/
+        const singlePricePattern = /^\d+(\.\d{1,2})?$/
+
+        if(singlePricePattern.test(servicePrice)){
+            const priceValue = parseFloat(servicePrice)
+            if(priceValue < 0){
+                return res.status(400).json({success:false, message:'Service Price cannot be negative'})
+            }
+            if(priceValue > 1000000){
+                return res.status(400).json({success:false, message:'Service Price exceeds maximum allowed limit'})
+            }
+        }else if(priceRangePattern.test(servicePrice)){
+            const match = servicePrice.match(priceRangePattern)
+            const minPrice = parseFloat(match[1])
+            const maxPrice = parseFloat(match[3])
+
+            if(minPrice < 0 || maxPrice < 0){
+                return res.status(400).json({success:false, message:'Service Price cannot be negative'})
+            }
+
+            if(minPrice > maxPrice){
+                return res.status(400).json({success:false, message:'Minimum Price cannot be greater than Maximum Price'})
+            }
+
+            if(maxPrice > 1000000){
+                return res.status(400).json({success:false, message:'Service Price exceeds maximum allowed limit'})
+            }
+        }else{
+            return res.status(400).json({success:false, message:'Invalid Service Price format. Use a number or a range like "100 - 200"'})
+        }
+
+        if(!serviceDuration || serviceDuration.trim() === ''){
+            return res.status(400).json({success:false, message:'Service Duration is requried'})
+        }
+
+        if(!['Active', 'Blocked'].includes(serviceStatus)){
+            return res.status(400).json({success:false, message:'Invalid status'})
+        }
+
+        const existingService = await serviceModel.findOne({photographer:photographerId, serviceName:serviceName})
+
+        if(existingService){
+            return res.status(400).json({success:false, message:'Service already exists'})
+        }
+
+        const newService = new serviceModel({
+            photographer:photographerId,
+            serviceName:serviceName,
+            serviceDescription:serviceDescription,
+            servicePrice:servicePrice,
+            serviceDuration:serviceDuration,
+            serviceStatus:serviceStatus
+        })
+
+        await newService.save()
+        return res.status(200).json({success:true, message:'Service added successfully'})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerPhotographer,
     verifyPhotographerOtp,
     resendPhotographerOtp,
-    verifyLoginPhotographer
+    verifyLoginPhotographer,
+    addService
 }
