@@ -2,12 +2,12 @@ import jwt from 'jsonwebtoken'
 
 const photographerMiddleware = (req, res, next) => {
     try {
-        const {photographerToken} = req.headers
-        if(!photographerToken){
+        const {photographertoken} = req.headers
+        if(!photographertoken){
             return res.status(400).json({success:false, message:'Not authorized. Login again'})
         }
 
-        const tokenDecoded = jwt.verify(photographerToken, process.env.JWT_SECRET)
+        const tokenDecoded = jwt.verify(photographertoken, process.env.JWT_SECRET)
 
         req.photographerId = tokenDecoded.id
         next()

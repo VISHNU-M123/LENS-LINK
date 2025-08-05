@@ -14,9 +14,18 @@ const serviceSchema = new mongoose.Schema({
         type:String,
         required:true
     },
-    servicePrice:{
-        type:String,
+    minPrice:{
+        type:Number,
         required:true
+    },
+    maxPrice:{
+        type:Number,
+        required:true
+    },
+    currency:{
+        type:String,
+        enum:['INR', 'USD'],
+        default:'INR'
     },
     serviceDuration:{
         type:String,

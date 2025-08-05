@@ -213,7 +213,7 @@ const addService = async (req, res) => {
     try {
         const photographerId = req.photographerId
         const serviceName = req.body.serviceName.trim().toLowerCase()
-        const {serviceDescription, servicePrice, serviceDuration, serviceStatus} = req.body
+        const {serviceDescription, minPrice, maxPrice, currency, serviceDuration, serviceStatus} = req.body
 
         if(!serviceName || serviceName.trim() === ''){
             return res.status(400).json({success:false, message:'Service Name is required'})
@@ -223,39 +223,31 @@ const addService = async (req, res) => {
             return res.status(400).json({success:false, message:'Service Description is required'})
         }
 
-        if(!servicePrice || servicePrice.trim() === ''){
-            return res.status(400).json({success:false, message:'Service Price is required'})
+        if (minPrice === undefined || minPrice === null || (typeof minPrice === 'string' && minPrice.trim() === '')) {
+            return res.status(400).json({success:false, message:'Minimum price is required'});
         }
 
-        const priceRangePattern = /^(\d+(\.\d{1,2})?)\s*-\s*(\d+(\.\d{1,2})?)$/
-        const singlePricePattern = /^\d+(\.\d{1,2})?$/
+        if (maxPrice === undefined || maxPrice === null || (typeof maxPrice === 'string' && maxPrice.trim() === '')) {
+            return res.status(400).json({success:false, message:'Maximum price is required'});
+        }
 
-        if(singlePricePattern.test(servicePrice)){
-            const priceValue = parseFloat(servicePrice)
-            if(priceValue < 0){
-                return res.status(400).json({success:false, message:'Service Price cannot be negative'})
-            }
-            if(priceValue > 1000000){
-                return res.status(400).json({success:false, message:'Service Price exceeds maximum allowed limit'})
-            }
-        }else if(priceRangePattern.test(servicePrice)){
-            const match = servicePrice.match(priceRangePattern)
-            const minPrice = parseFloat(match[1])
-            const maxPrice = parseFloat(match[3])
+        const minPriceNum = Number(minPrice)
+        const maxPriceNum = Number(maxPrice)
 
-            if(minPrice < 0 || maxPrice < 0){
-                return res.status(400).json({success:false, message:'Service Price cannot be negative'})
-            }
+        if(isNaN(minPriceNum) || minPriceNum < 0){
+            return res.status(400).json({success:false, message:'Invalid Minimum price'})
+        }
 
-            if(minPrice > maxPrice){
-                return res.status(400).json({success:false, message:'Minimum Price cannot be greater than Maximum Price'})
-            }
+        if(isNaN(maxPriceNum) || maxPriceNum < 0){
+            return res.status(400).json({success:false, message:'Invalid Maximun price'})
+        }
 
-            if(maxPrice > 1000000){
-                return res.status(400).json({success:false, message:'Service Price exceeds maximum allowed limit'})
-            }
-        }else{
-            return res.status(400).json({success:false, message:'Invalid Service Price format. Use a number or a range like "100 - 200"'})
+        if(minPriceNum > maxPriceNum){
+            return res.status(400).json({success:false, message:'Minimum price cannot be greater than Maximum price'})
+        }
+
+        if(!['INR', 'USD'].includes(currency)){
+            return res.status(400).json({success:false, message:'Invalid currency'})
         }
 
         if(!serviceDuration || serviceDuration.trim() === ''){
@@ -274,9 +266,11 @@ const addService = async (req, res) => {
 
         const newService = new serviceModel({
             photographer:photographerId,
-            serviceName:serviceName,
+            serviceName:serviceName.trim().toLowerCase(),
             serviceDescription:serviceDescription,
-            servicePrice:servicePrice,
+            minPrice:minPriceNum,
+            maxPrice:maxPriceNum,
+            currency:currency,
             serviceDuration:serviceDuration,
             serviceStatus:serviceStatus
         })

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 
 const ServiceForm = ({heading, subHeadingService, mode='add', initialData = {}, onSubmit}) => {
 
-    const [formData, setFormData] = useState({serviceName:'', serviceDescription:'', servicePrice:'', serviceDuration:'', serviceStatus:''})
+    const [formData, setFormData] = useState({serviceName:'', serviceDescription:'', minPrice:'', maxPrice:'', currency:'', serviceDuration:'', serviceStatus:''})
 
     useEffect(() => {
         if(mode === 'edit' && initialData){
@@ -50,9 +50,23 @@ const ServiceForm = ({heading, subHeadingService, mode='add', initialData = {}, 
                                     {/* <span className='text-red-500 text-xs block mt-1'>{showCategoryErrorMsg.categoryDescription}</span> */}
                                 {/* )} */}
                             </div>
-                            <div className='mb-[40px]'>
-                                <label htmlFor="" className='text-[14px] leading-none align-top text-white'>Service Price</label>
-                                <input type="text" name='servicePrice' value={formData.servicePrice} onChange={handleChange} className={`h-[41.2px] border text-[14px] font-normal py-[10px] px-[11px] bg-[#2A3038] rounded-[2px] text-white leading-none w-full block outline-none border-[#2c2e33]`} placeholder='Service Price' />
+                            <div className='flex flex-col md:flex-row sm:gap-3'>
+                                <div className='w-full mb-[40px]'>
+                                    <label htmlFor="" className='text-[14px] leading-none align-top text-white'>Minimum Price</label>
+                                    <input type="text" name='minPrice' value={formData.minPrice} onChange={handleChange} className={`h-[41.2px] border text-[14px] font-normal py-[10px] px-[11px] bg-[#2A3038] rounded-[2px] text-white leading-none w-full block outline-none border-[#2c2e33]`} placeholder='Min Price' />
+                                </div>
+                                <div className='w-full mb-[40px]'>
+                                    <label htmlFor="" className='text-[14px] leading-none align-top text-white'>Maximum Price</label>
+                                    <input type="text" name='maxPrice' value={formData.maxPrice} onChange={handleChange} className={`h-[41.2px] border text-[14px] font-normal py-[10px] px-[11px] bg-[#2A3038] rounded-[2px] text-white leading-none w-full block outline-none border-[#2c2e33]`} placeholder='Max Price' />
+                                </div>
+                                <div className='w-full mb-[40px]'>
+                                    <label htmlFor="" className='text-[14px] leading-none align-top text-white'>Currency</label>
+                                    <select id="" name='currency' value={formData.currency} onChange={handleChange} className='h-[41.2px] border border-[#2c2e33] text-[14px] font-normal py-[10px] px-[11px] bg-[#2A3038] rounded-[2px] text-white leading-none w-full block outline-none'>
+                                        <option value="">Select Currency</option>
+                                        <option value="INR">₹ INR</option>
+                                        <option value="USD">$ USD</option>
+                                    </select>
+                                </div>
                                 {/* {showCategoryErrorMsg.categoryDescription && ( */}
                                     {/* <span className='text-red-500 text-xs block mt-1'>{showCategoryErrorMsg.categoryDescription}</span> */}
                                 {/* )} */}
