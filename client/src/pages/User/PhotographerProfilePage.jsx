@@ -262,6 +262,9 @@ const PhotographerProfilePage = () => {
                                 <h4 className='text-lg font-semibold text-white'>Wedding Photography</h4>
                                 <span className='text-[#ec0a30] font-bold'>$1,200 - $3,500</span>
                             </div>
+                            <div className='mb-3'>
+                                <p className='text-sm font-normal text-white'>Fine art wedding photography appreciates beauty and light and takes a tremendous amount of skill and knowledge of light to execute well. The images focus mostly on the couple and details of the day, shot to make everything look as beautiful as possible.</p>
+                            </div>
                             <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
                                 <FaRegClock size={16} />
                                 <span className='text-sm'>Full Day</span>

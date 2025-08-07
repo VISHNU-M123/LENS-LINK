@@ -17,6 +17,7 @@ import { BiSolidFile } from "react-icons/bi";
 import { BiSolidCategory } from "react-icons/bi";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { GrServices } from "react-icons/gr";
+import { MdPerson3 } from "react-icons/md";
 
 
 const Sidebar = ({showItems, hideLogoSection = false}) => {
@@ -143,6 +144,19 @@ const Sidebar = ({showItems, hideLogoSection = false}) => {
                         </span>
                         {showItems && (
                             <span className={`${isActive('/service') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>service</span>
+                        )}
+                    </a>
+                </li>
+                <li className={`${showItems ? 'pr-[20px]' : 'p-0'}`}>
+                    <a href="" onClick={() => navigate('/profile-details')} className={`flex items-center py-[12px] pr-[10px] pl-[20px] rounded-[0_100px_100px_0] ${isActive('/profile-details') ? 'bg-[#0f1015]' : ''} relative`}>
+                        {isActive('/profile-details') && (
+                            <div className='absolute left-0 top-0 bg-[#0090e7] w-[3px] h-full'></div>
+                        )}
+                        <span className='w-[31px] h-[31px] bg-[#6c7293]/20 rounded-full flex items-center justify-center mr-[8px]'>
+                            <MdPerson3 className='text-[#0090e7]' />
+                        </span>
+                        {showItems && (
+                            <span className={`${isActive('/profile-details') ? 'text-white' : 'text-[#6c7293]'} text-[15px]`}>Profile Details</span>
                         )}
                     </a>
                 </li>

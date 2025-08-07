@@ -32,15 +32,19 @@ const ServiceForm = ({heading, subHeadingService, mode='add', initialData = {}, 
     }
 
     const resetForm = () => {
-        setFormData({
-            serviceName: '',
-            serviceDescription: '',
-            minPrice: '',
-            maxPrice: '',
-            currency: '',
-            serviceDuration: '',
-            serviceStatus: ''
-        })
+        if(mode === 'edit' && initialData){
+            setFormData(initialData)
+        }else{
+            setFormData({
+                serviceName: '',
+                serviceDescription: '',
+                minPrice: '',
+                maxPrice: '',
+                currency: '',
+                serviceDuration: '',
+                serviceStatus: ''
+            })
+        }
     }
   return (
     <div>
@@ -96,9 +100,6 @@ const ServiceForm = ({heading, subHeadingService, mode='add', initialData = {}, 
                                         <span className='text-red-500 text-xs block mt-1'>{fieldErrors.currency}</span>
                                     )}
                                 </div>
-                                {/* {showCategoryErrorMsg.categoryDescription && ( */}
-                                    {/* <span className='text-red-500 text-xs block mt-1'>{showCategoryErrorMsg.categoryDescription}</span> */}
-                                {/* )} */}
                             </div>
                             <div className='mb-[40px]'>
                                 <label htmlFor="" className='text-[14px] leading-none align-top text-white'>Service Duration</label>

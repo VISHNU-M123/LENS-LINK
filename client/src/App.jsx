@@ -14,6 +14,7 @@ import Gallery from './pages/Gallery'
 import Service from './pages/Photographer/Service'
 import AddService from './pages/Photographer/AddService'
 import EditService from './pages/Photographer/EditService'
+import ProfileDetails from './pages/Photographer/ProfileDetails'
 
 const App = () => {
   return (
@@ -35,6 +36,7 @@ const App = () => {
         <Route path='/service' element={<Service/>}/>
         <Route path='/add-service' element={<AddService/>}/>
         <Route path='/edit-service' element={<EditService/>}/>
+        <Route path='/profile-details' element={<ProfileDetails/>}/>
       </Routes>
     </div>
   )
