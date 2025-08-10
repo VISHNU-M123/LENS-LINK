@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Sidebar from '../../components/Photographer/Sidebar'
 import Navbar from '../../components/Photographer/Navbar'
 import coverImg from '../../assets/IndianWedding-Landing.jpg'
@@ -6,7 +6,7 @@ import { RiImageEditLine } from "react-icons/ri";
 import profileImg from '../../assets/gallery-3.jpg'
 import { LuPhone } from "react-icons/lu";
 import { CiMail } from "react-icons/ci";
-import { CiGlobe } from "react-icons/ci";
+import { FaWhatsapp } from "react-icons/fa6";
 import { FiMapPin } from "react-icons/fi";
 import { FaInstagram } from "react-icons/fa";
 import { FiFacebook } from "react-icons/fi";
@@ -14,14 +14,96 @@ import { FiTwitter } from "react-icons/fi";
 import { FiAward } from "react-icons/fi";
 import { FiCheckCircle } from "react-icons/fi";
 import { RiEdit2Fill } from "react-icons/ri";
+import axios from 'axios';
+import { PhotographerContext } from '../../context/PhotographerContext';
+import { FiPlus } from "react-icons/fi";
 
 const ProfileDetails = () => {
 
+  const {photographerToken, backendUrl} = useContext(PhotographerContext)
+
     const [showSidebarItems, setShowSidebarItems] = useState(true)
+    const [editModes, setEditModes] = useState({pforile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
+    const [profileData, setProfileData] = useState({})
+    const [aboutText, setAboutText] = useState('')
+    const [showAboutError, setShowAboutError] = useState('')
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
     }
+
+    const toggleEditMode = (section) => {
+      setEditModes(prev => ({
+        ...prev,
+        [section]: !prev[section]
+      }))
+
+      if(section === "about" && !editModes.about){
+        setAboutText(profileData.about)
+      }
+    }
+
+    useEffect(() => {
+      const fetchProfileData = async () => {
+        try {
+          const {data} = await axios.get(`${backendUrl}/api/photographer/getProfile`, {headers:{photographerToken}})
+          if(data.success){
+            setProfileData(data.profileData)
+          }else{
+            alert('photographer phofile details fetching error')
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
+      fetchProfileData()
+    },[photographerToken])
+
+    const saveAbout = async () => {
+      try {
+        setShowAboutError('');
+        if(!aboutText || aboutText.trim() === ''){
+          setShowAboutError('About is required')
+          return
+        }
+
+        let formattedAbout = aboutText.trim().replace(/\s+/g, ' ');
+
+        if(formattedAbout.length < 10){
+          setShowAboutError('About must be at least 10 characters')
+          return
+        }
+
+        if(formattedAbout.length > 1000){
+          setShowAboutError('About cannot exceed 1000 characters')
+          return
+        }
+
+        if (/^(.)\1+$/.test(formattedAbout)) {
+          setShowAboutError('About cannot be just a single repeated character')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateAbout`, {about:formattedAbout}, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, about:data.about}))
+          setEditModes(prev => ({...prev, about:false}))
+          alert('about updated successfully')
+        }else{
+          setShowAboutError(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const cancelEdit = () => {
+      setAboutText(profileData.about || '')
+      setEditModes(prev => ({...prev, about:false}))
+      setShowAboutError('')
+    }
+
   return (
     <div>
       <div className='flex'>
@@ -29,7 +111,7 @@ const ProfileDetails = () => {
             <Sidebar showItems={showSidebarItems}/>
         </div>
         <div className='w-full'>
-            <Navbar toggleSidebarItems={toggleSidebarItems}/>
+            <Navbar toggleSidebarItems={toggleSidebarItems} showItems={showSidebarItems}/>
             <div className='pt-[70px]'>
                 <div className="bg-[#000000] py-[30px] px-[28px] w-full min-h-screen">
                     {/* <p className='text-white'>profile details of photographer</p> */}
@@ -75,13 +157,42 @@ const ProfileDetails = () => {
                           <div className="py-[28px] px-[25px]">
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">About</h1>
-                              <button className='text-[#ec0a30] hover:text-red-400 transition'>
-                                <RiEdit2Fill size={18} />
-                              </button>
+                              {profileData.about && (
+                                <button onClick={() => toggleEditMode('about')} className='text-[#ec0a30] hover:text-red-400 transition cursor-pointer'>
+                                  <RiEdit2Fill size={18} />
+                                </button>
+                              )}
                             </div>
-                            <div>
-                              <p className="text-[#D7D7D7] text-[14px]">Passionate photographer specializing in capturing life\'s most precious moments. With over 8 years of experience, I blend artistic vision with technical expertise to create timeless memories that tell your unique story.</p>
-                            </div>
+                            {editModes.about ? (
+                              <div className='space-y-3'>
+                                <textarea name="" id="" value={aboutText} onChange={(e) => {setAboutText(e.target.value); if(showAboutError) setShowAboutError('')}} className={`w-full bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded h-32 resize-none outline-none ${showAboutError ? 'border border-red-500' : ''}`} placeholder='Tell people about yourself, your experience, and what makes you unique as a photographer...'></textarea>
+                                {showAboutError && (
+                                  <span className='text-red-500 text-xs block -mt-1'>{showAboutError}</span>
+                                )}
+                                <div className='flex gap-2'>
+                                  <button type='button' onClick={saveAbout} className='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm'>Save</button>
+                                  <button type='button' onClick={cancelEdit} className='bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm'>Cancel</button>
+                                </div>
+                              </div>
+                            ):(
+                              <>
+                              {profileData.about ? (
+                                <div>
+                                  <p className="text-[#D7D7D7] text-[14px]">{profileData.about}</p>
+                                  {/* <p className="text-[#D7D7D7] text-[14px]">Passionate photographer specializing in capturing life\'s most precious moments. With over 8 years of experience, I blend artistic vision with technical expertise to create timeless memories that tell your unique story.</p> */}
+                                </div>
+                              ):(
+                                <div className='text-center py-8 text-[#D7D7D7]'>
+                                  <p className='text-sm mb-4'>Add a description about yourself to let clients know more about your photography style and experience.</p>
+
+                                  <button onClick={() => toggleEditMode('about')} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                      <FiPlus size={16} />
+                                      Add Information
+                                  </button>
+                                </div>
+                              )}
+                              </>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -104,8 +215,8 @@ const ProfileDetails = () => {
                                 <span className='text-[#D7D7D7] text-sm'>abcdefg@gmail.com</span>
                               </div>
                               <div className='flex items-center gap-3'>
-                                <CiGlobe size={18} strokeWidth={1} className='text-[#ec0a30]' />
-                                <span className='text-[#D7D7D7] text-sm'>asdfghjk.com</span>
+                                <FaWhatsapp size={18} strokeWidth={1} className='text-[#ec0a30]' />
+                                <a href="https://wa.me/9874563210" target='_blank' rel="noopener noreferrer" className='text-[#D7D7D7] text-sm'>9874563210</a>
                               </div>
                             </div>
                           </div>
