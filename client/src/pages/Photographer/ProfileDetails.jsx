@@ -17,16 +17,23 @@ import { RiEdit2Fill } from "react-icons/ri";
 import axios from 'axios';
 import { PhotographerContext } from '../../context/PhotographerContext';
 import { FiPlus } from "react-icons/fi";
+import { RiAddLine } from "react-icons/ri";
 
 const ProfileDetails = () => {
 
   const {photographerToken, backendUrl} = useContext(PhotographerContext)
 
     const [showSidebarItems, setShowSidebarItems] = useState(true)
-    const [editModes, setEditModes] = useState({pforile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
-    const [profileData, setProfileData] = useState({})
+    const [editModes, setEditModes] = useState({profile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
+    const [profileData, setProfileData] = useState({equipment:[]})
     const [aboutText, setAboutText] = useState('')
     const [showAboutError, setShowAboutError] = useState('')
+    const [newEquipment, setNewEquipment] = useState('')
+    const [isAddingEquipment, setIsAddingEquipment] = useState(false)
+    const [showEquipmentError, setShowEquipmentError] = useState('')
+    const [isEditingEquipment, setIsEditingEquipment] = useState(false)
+    const [editedEquipment, setEditedEquipment] = useState([])
+    const [editEquipmentError, setEditEquipmentError] = useState([])
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -92,6 +99,66 @@ const ProfileDetails = () => {
           alert('about updated successfully')
         }else{
           setShowAboutError(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const addNewEquipment = async () => {
+      try {
+        setShowEquipmentError('')
+
+        if(!newEquipment || newEquipment.trim() === ''){
+          setShowEquipmentError('Equipment name is required')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/addEquipment`, {equipment:newEquipment}, {headers:{photographerToken}})
+        if(data.success){
+          alert('new equipment added successfylly')
+          setProfileData(prev => ({...prev, equipment:data.equipment}))
+          setNewEquipment('')
+          setIsAddingEquipment(false)
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const updateEquipment = async () => {
+      try {
+
+        const errors = Array(editedEquipment.length).fill('')
+        let hasError = false
+
+        const cleanedEquipment = editedEquipment.map((item, index) => {
+          let trimmed = typeof item === 'string' ? item.trim() : ''
+          if(!trimmed){
+            errors[index] = 'this field cannot be empty'
+            hasError = true
+          }
+          return trimmed
+        })
+
+        setEditEquipmentError(errors)
+
+        if(hasError) return
+
+        if(cleanedEquipment.some(item => item === '')){
+          alert('each equipment item must be a non empty string')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateEquipment`, {equipment:cleanedEquipment}, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, equipment:data.equipment}))
+          setIsEditingEquipment(false)
+          alert('equipments edited successfully')
+        }else{
+          alert(data.message)
         }
       } catch (error) {
         console.log(error)
@@ -230,27 +297,70 @@ const ProfileDetails = () => {
                           <div className="py-[28px] px-[25px]">
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Professional Equipments</h1>
-                              <button className='text-[#ec0a30] hover:text-red-400 transition'>
-                                <RiEdit2Fill size={18} />
-                              </button>
+                              {profileData.equipment.length > 0 && (
+                                <button onClick={() => {setEditedEquipment([...profileData.equipment]); setIsEditingEquipment(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                  <RiEdit2Fill size={18} />
+                                </button>
+                              )}
                             </div>
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-                              <div className='flex items-center gap-3'>
-                                <FiCheckCircle size={16} className='text-green-500' />
-                                <span className='text-[#D7D7D7] text-sm'>Canon EOS R5</span>
+                            {isEditingEquipment ? (
+                              <div>
+                                <div className='grid grid-cols-1 xl:grid-cols-2 gap-3'>
+                                  {editedEquipment.map((item, index) => (
+                                    <div className='flex flex-col'>
+                                      <div key={index} className='flex items-center gap-3'>
+                                        <input type="text" value={item} onChange={(e) => {const newItems = [...editedEquipment]; newItems[index] = e.target.value; setEditedEquipment(newItems); const newErrors = [...editEquipmentError]; newErrors[index]=''; setEditEquipmentError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editEquipmentError[index] ? 'border-red-500' : 'border-gray-600'}`} />
+                                      </div>
+                                      {editEquipmentError[index] && (
+                                        <span className="text-red-500 text-xs mt-1">{editEquipmentError[index]}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className="flex gap-2 my-4">
+                                  <button onClick={updateEquipment} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm'>save</button>
+                                  <button onClick={() => {setIsEditingEquipment(false); setEditEquipmentError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm'>cancel</button>
+                                </div>
                               </div>
-                              <div className='flex items-center gap-3'>
-                                <FiCheckCircle size={16} className='text-green-500' />
-                                <span className='text-[#D7D7D7] text-sm'>Sony A7R IV</span>
+                            ):(
+                              <div>
+                                {profileData.equipment.length > 0 && (
+                                  <div className='mb-4'>
+                                    <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                                      {profileData.equipment.map((item, index) => (
+                                        <div key={index} className='flex items-center gap-3'>
+                                          <FiCheckCircle size={16} className='text-green-500' />
+                                          <span className='text-[#D7D7D7] text-sm'>{item}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <div className='flex items-center gap-3'>
-                                <FiCheckCircle size={16} className='text-green-500' />
-                                <span className='text-[#D7D7D7] text-sm'>Professional Lighting Kit</span>
+                            )}
+                            {isAddingEquipment && (
+                              <div>
+                                <div className='flex gap-2'>
+                                  <input value={newEquipment} onChange={(e) => {setNewEquipment(e.target.value); if(showEquipmentError) setShowEquipmentError('')}} type="text" className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showEquipmentError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Canon EOS R5, Professional Lighting Kit' />
+                                  <button onClick={addNewEquipment} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                    <RiAddLine size={16} />
+                                  </button>
+                                </div>
+                                {showEquipmentError && (
+                                  <span className='text-red-500 text-xs block mt-1'>{showEquipmentError}</span>
+                                )}
                               </div>
-                              <div className='flex items-center gap-3'>
-                                <FiCheckCircle size={16} className='text-green-500' />
-                                <span className='text-[#D7D7D7] text-sm'>Drone Photography</span>
-                              </div>
+                            )}
+                            <div className={`text-center ${profileData.equipment.length === 0 ? 'py-8' : 'pt-4'}  text-[#D7D7D7]`}>
+                              {profileData.equipment.length === 0 && (
+                                <p className='text-sm mb-4'>Add yor equipments details</p>
+                              )}
+                              {!isEditingEquipment && (
+                                <button onClick={() => setIsAddingEquipment(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  <FiPlus size={16} />
+                                  Add Information
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>
