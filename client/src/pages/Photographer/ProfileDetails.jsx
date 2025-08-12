@@ -18,6 +18,7 @@ import axios from 'axios';
 import { PhotographerContext } from '../../context/PhotographerContext';
 import { FiPlus } from "react-icons/fi";
 import { RiAddLine } from "react-icons/ri";
+import { ImBin } from "react-icons/im";
 
 const ProfileDetails = () => {
 
@@ -25,15 +26,23 @@ const ProfileDetails = () => {
 
     const [showSidebarItems, setShowSidebarItems] = useState(true)
     const [editModes, setEditModes] = useState({profile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
-    const [profileData, setProfileData] = useState({equipment:[]})
+    const [profileData, setProfileData] = useState({equipment:[], achievements:[]})
     const [aboutText, setAboutText] = useState('')
     const [showAboutError, setShowAboutError] = useState('')
+
     const [newEquipment, setNewEquipment] = useState('')
     const [isAddingEquipment, setIsAddingEquipment] = useState(false)
     const [showEquipmentError, setShowEquipmentError] = useState('')
     const [isEditingEquipment, setIsEditingEquipment] = useState(false)
     const [editedEquipment, setEditedEquipment] = useState([])
     const [editEquipmentError, setEditEquipmentError] = useState([])
+
+    const [newAchievement, setNewAchievement] = useState('')
+    const [isAddingAchievement, setIsAddingAchievement] = useState(false)
+    const [showAchievementError, setShowAchievementError] = useState('')
+    const [isEditingAchievement, setIsEditingAchievement] = useState(false)
+    const [editedAchievement, setEditedAchievement] = useState([])
+    const [editAchievementError, setEditAchievementError] = useState([])
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -171,6 +180,66 @@ const ProfileDetails = () => {
       setShowAboutError('')
     }
 
+    const addNewAchievement = async () => {
+      try {
+        setShowAchievementError('')
+
+        if(!newAchievement || newAchievement.trim() === ''){
+          setShowAchievementError('Achievement is required')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/addAchievement`, {achievement:newAchievement}, {headers:{photographerToken}})
+        if(data.success){
+          alert('new achievement added successfully')
+          setProfileData(prev => ({...prev, achievements:data.achievement}))
+          setNewAchievement('')
+          setIsAddingAchievement(false)
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const updateAchievement = async () => {
+      try {
+        
+        const errors = Array(editedAchievement.length).fill('')
+        let hasError = false
+
+        const cleanedAchievement = editedAchievement.map((item, index) => {
+          let trimmed = typeof item === 'string' ? item.trim() : ''
+          if(!trimmed){
+            errors[index] = 'this field cannot be empty'
+            hasError = true
+          }
+          return trimmed
+        })
+
+        setEditAchievementError(errors)
+
+        if(hasError) return
+
+        if(cleanedAchievement.some(item => item === '')){
+          alert('Each achievement item must be a non empty string')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateAchievement`, {achievements:cleanedAchievement}, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, achievements:data.achievements}))
+          setIsEditingAchievement(false)
+          alert('achievements edited successfully')
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
   return (
     <div>
       <div className='flex'>
@@ -298,7 +367,7 @@ const ProfileDetails = () => {
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Professional Equipments</h1>
                               {profileData.equipment.length > 0 && (
-                                <button onClick={() => {setEditedEquipment([...profileData.equipment]); setIsEditingEquipment(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                <button onClick={() => {setEditedEquipment([...profileData.equipment]); setIsEditingEquipment(true)}} className='text-[#ec0a30] hover:text-red-400 transition cursor-pointer'>
                                   <RiEdit2Fill size={18} />
                                 </button>
                               )}
@@ -310,6 +379,9 @@ const ProfileDetails = () => {
                                     <div className='flex flex-col'>
                                       <div key={index} className='flex items-center gap-3'>
                                         <input type="text" value={item} onChange={(e) => {const newItems = [...editedEquipment]; newItems[index] = e.target.value; setEditedEquipment(newItems); const newErrors = [...editEquipmentError]; newErrors[index]=''; setEditEquipmentError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editEquipmentError[index] ? 'border-red-500' : 'border-gray-600'}`} />
+                                        <button onClick={() => {const newItems = editedEquipment.filter((_, i) => i !== index); setEditedEquipment(newItems)}} type='button' className='text-red-500 hover:text-red-700 transition cursor-pointer'>
+                                          <ImBin size={14} />
+                                        </button>
                                       </div>
                                       {editEquipmentError[index] && (
                                         <span className="text-red-500 text-xs mt-1">{editEquipmentError[index]}</span>
@@ -318,8 +390,8 @@ const ProfileDetails = () => {
                                   ))}
                                 </div>
                                 <div className="flex gap-2 my-4">
-                                  <button onClick={updateEquipment} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm'>save</button>
-                                  <button onClick={() => {setIsEditingEquipment(false); setEditEquipmentError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm'>cancel</button>
+                                  <button onClick={updateEquipment} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>save</button>
+                                  <button onClick={() => {setIsEditingEquipment(false); setEditEquipmentError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>cancel</button>
                                 </div>
                               </div>
                             ):(
@@ -329,8 +401,10 @@ const ProfileDetails = () => {
                                     <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
                                       {profileData.equipment.map((item, index) => (
                                         <div key={index} className='flex items-center gap-3'>
-                                          <FiCheckCircle size={16} className='text-green-500' />
-                                          <span className='text-[#D7D7D7] text-sm'>{item}</span>
+                                          <div className='flex-shrink-0'>
+                                            <FiCheckCircle size={16} className='text-green-500' />
+                                          </div>
+                                          <span className='text-[#D7D7D7] text-sm truncate max-w-[200px]'>{item}</span>
                                         </div>
                                       ))}
                                     </div>
@@ -355,10 +429,15 @@ const ProfileDetails = () => {
                               {profileData.equipment.length === 0 && (
                                 <p className='text-sm mb-4'>Add yor equipments details</p>
                               )}
-                              {!isEditingEquipment && (
+                              {!isEditingEquipment && !isAddingEquipment && (
                                 <button onClick={() => setIsAddingEquipment(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
                                   <FiPlus size={16} />
                                   Add Information
+                                </button>
+                              )}
+                              {isAddingEquipment && (
+                                <button onClick={() => {setIsAddingEquipment(false); setShowEquipmentError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  Cancel
                                 </button>
                               )}
                             </div>
@@ -370,23 +449,78 @@ const ProfileDetails = () => {
                           <div className="py-[28px] px-[25px]">
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Achievements</h1>
-                              <button className='text-[#ec0a30] hover:text-red-400 transition'>
-                                <RiEdit2Fill size={18} />
-                              </button>
+                              {profileData.achievements.length > 0 && (
+                                <button onClick={() => {setEditedAchievement([...profileData.achievements]); setIsEditingAchievement(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                  <RiEdit2Fill size={18} />
+                                </button>
+                              )}
                             </div>
-                            <div className='space-y-3'>
-                              <div className='flex items-start gap-3'>
-                                  <FiAward size={16} className='text-yellow-500 mt-1' />
-                                  <span className='text-[#D7D7D7] text-sm'>Wedding Photographer of the Year 2023</span>
+                            {isEditingAchievement ? (
+                              <div>
+                                <div className='grid grid-cols-1 gap-3'>
+                                  {editedAchievement.map((item, index) => (
+                                    <div key={index} className='flex flex-col'>
+                                      <div className='flex items-center gap-3'>
+                                        <input type="text" value={item} onChange={(e) => {const newItems = [...editedAchievement]; newItems[index] = e.target.value; setEditedAchievement(newItems); const newErrors = [...editAchievementError]; newErrors[index] = ''; setEditAchievementError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editAchievementError[index] ? 'border-red-500' : 'border-gray-600'}`} />
+                                        <button onClick={() => {const newItems = editedAchievement.filter((_, i) => i !== index); setEditedAchievement(newItems)}} type='button' className='text-red-500 hover:text-red-700 transition cursor-pointer'>
+                                          <ImBin size={14} />
+                                        </button>
+                                      </div>
+                                      {editAchievementError[index] && (
+                                        <span className='text-red-500 text-xs mt-1'>{editAchievementError[index]}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className='flex gap-2 my-4'>
+                                  <button onClick={updateAchievement} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>Save</button>
+                                  <button onClick={() => {setIsEditingAchievement(false); setEditAchievementError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>Cancel</button>
+                                </div>
                               </div>
-                              <div className='flex items-start gap-3'>
-                                  <FiAward size={16} className='text-yellow-500 mt-1' />
-                                  <span className='text-[#D7D7D7] text-sm'>Featured in Modern Wedding Magazine</span>
+                            ):(
+                              <div>
+                                {profileData.achievements.length > 0 && (
+                                  <div className='mb-4'>
+                                    <div className='space-y-3'>
+                                      {profileData.achievements.map((item, index) => (
+                                        <div key={index} className='flex items-start gap-3'>
+                                            <FiAward size={16} className='text-yellow-500 mt-1' />
+                                            <span className='text-[#D7D7D7] text-sm'>{item}</span>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
-                              <div className='flex items-start gap-3'>
-                                  <FiAward size={16} className='text-yellow-500 mt-1' />
-                                  <span className='text-[#D7D7D7] text-sm'>500+ Happy Couples</span>
+                            )}
+                            {isAddingAchievement && (
+                              <div>
+                                <div className="flex gap-2">
+                                  <input value={newAchievement} onChange={(e) => {setNewAchievement(e.target.value); if(showAchievementError) setShowAchievementError('')}} type="text" className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showAchievementError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Wedding Photographer of the Year 2023' />
+                                  <button onClick={addNewAchievement} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                    <RiAddLine size={16} />
+                                  </button>
+                                </div>
+                                {showAchievementError && (
+                                  <span className='text-red-500 text-xs block mt-1'>{showAchievementError}</span>
+                                )}
                               </div>
+                            )}
+                            <div className={`text-center ${profileData.achievements.length === 0 ? 'py-8' : 'pt-4'} text-[#D7D7D7]`}>
+                              {profileData.achievements.length === 0 && (
+                                <p className='text-sm mb-4'>Add your achievement details</p>
+                              )}
+                              {!isEditingAchievement && !isAddingAchievement && (
+                                <button onClick={() => setIsAddingAchievement(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  <FiPlus size={16} />
+                                  Add Information
+                                </button>
+                              )}
+                              {isAddingAchievement && (
+                                <button onClick={() => {setIsAddingAchievement(false); setShowAchievementError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  Cancel
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

@@ -34,7 +34,8 @@ const photographerProfileSchema = new mongoose.Schema({
         default:[]
     },
     achievements:{
-        type:String,
+        type:[String],
+        default:[]
     },
     socialLinks:[{
         platform:{

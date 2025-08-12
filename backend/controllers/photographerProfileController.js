@@ -117,9 +117,66 @@ const updateEquipment = async (req, res) => {
     }
 }
 
+const addAchievement = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {achievement} = req.body
+
+        if(!achievement || achievement.trim() === ''){
+            return res.status(400).json({success:false, message:'Achievement is required'})
+        }
+
+        const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {$push:{achievements:achievement.trim()}}, {new:true})
+
+        if(!profile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, achievements:profile.achievements})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const updateAchievement = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {achievements} = req.body
+
+        if(!achievements){
+            return res.status(400).json({success:false, message:'Achievement is required'})
+        }
+
+        if(!Array.isArray(achievements)){
+            return res.status(400).json({success:false, message:'Achievement must be an array'})
+        }
+
+        if(achievements.some(item => typeof item !== 'string' || item.trim() === '')){
+            return res.status(400).json({success:false, message:'each achievement item must be a non empty string'})
+        }
+
+        const updatedAchievement = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {achievements}, {new:true})
+        res.status(200).json({success:true, achievements:updatedAchievement.achievements})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
     addEquipment,
-    updateEquipment
+    updateEquipment,
+    addAchievement,
+    updateAchievement
 }
