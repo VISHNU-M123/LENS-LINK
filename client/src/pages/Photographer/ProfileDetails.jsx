@@ -26,7 +26,7 @@ const ProfileDetails = () => {
 
     const [showSidebarItems, setShowSidebarItems] = useState(true)
     const [editModes, setEditModes] = useState({profile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
-    const [profileData, setProfileData] = useState({equipment:[], achievements:[]})
+    const [profileData, setProfileData] = useState({equipment:[], achievements:[], specializations:[]})
     const [aboutText, setAboutText] = useState('')
     const [showAboutError, setShowAboutError] = useState('')
 
@@ -43,6 +43,13 @@ const ProfileDetails = () => {
     const [isEditingAchievement, setIsEditingAchievement] = useState(false)
     const [editedAchievement, setEditedAchievement] = useState([])
     const [editAchievementError, setEditAchievementError] = useState([])
+
+    const [newSpecialization, setNewSpecialization] = useState('')
+    const [isAddingSpecialization, setIsAddingSpecialization] = useState(false)
+    const [showSpecializationError, setShowSpecializationError] = useState('')
+    const [isEditingSpecialization, setIsEditingSpecialization] = useState(false)
+    const [editedSpecialization, setEditedSpecialization] = useState([])
+    const [editSpecializationError, setEditSpecializationError] = useState([])
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -192,7 +199,7 @@ const ProfileDetails = () => {
         const {data} = await axios.post(`${backendUrl}/api/photographer/addAchievement`, {achievement:newAchievement}, {headers:{photographerToken}})
         if(data.success){
           alert('new achievement added successfully')
-          setProfileData(prev => ({...prev, achievements:data.achievement}))
+          setProfileData(prev => ({...prev, achievements:data.achievements}))
           setNewAchievement('')
           setIsAddingAchievement(false)
         }else{
@@ -232,6 +239,65 @@ const ProfileDetails = () => {
           setProfileData(prev => ({...prev, achievements:data.achievements}))
           setIsEditingAchievement(false)
           alert('achievements edited successfully')
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const addNewSpecialization = async () => {
+      try {
+        setShowSpecializationError('')
+
+        if(!newSpecialization || newSpecialization.trim() === ''){
+          setShowSpecializationError('Specialization is required')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/addSpecialization`, {specializations:newSpecialization}, {headers:{photographerToken}})
+        if(data.success){
+          alert('new specialization added successfully')
+          setProfileData(prev => ({...prev, specializations:data.specializations}))
+          setNewSpecialization('')
+          setIsAddingSpecialization(false)
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const updateSpecialization = async () => {
+      try {
+        const errors = Array(editedSpecialization.length).fill('')
+        let hasError = false
+
+        const cleanedSpecialization = editedSpecialization.map((item, index) => {
+          let trimmed = typeof item === 'string' ? item.trim() : ''
+          if(!trimmed){
+            errors[index] = 'this field cannot be empty'
+            hasError = true
+          }
+          return trimmed
+        })
+
+        setEditSpecializationError(errors)
+
+        if(hasError) return
+
+        if(cleanedSpecialization.some(item => item === '')){
+          alert('Each specialization item must be a non empty string')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateSpecialization`, {specializations:cleanedSpecialization}, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, specializations:data.specializations}))
+          setIsEditingSpecialization(false)
+          alert('specializations edited successfully')
         }else{
           alert(data.message)
         }
@@ -533,15 +599,73 @@ const ProfileDetails = () => {
                           <div className="py-[28px] px-[25px]">
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Specialisations</h1>
-                              <button className='text-[#ec0a30] hover:text-red-400 transition'>
-                                <RiEdit2Fill size={18} />
-                              </button>
+                              {profileData.specializations.length > 0 && (
+                                <button onClick={() => {setEditedSpecialization([...profileData.specializations]); setIsEditingSpecialization(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                  <RiEdit2Fill size={18} />
+                                </button>
+                              )}
                             </div>
-                            <div className='flex flex-wrap gap-3'>
-                              <span className='bg-[#ec0a30] text-[#D7D7D7] text-sm px-4 py-2 rounded-full font-medium'>Wedding Photography</span>
-                              <span className='bg-[#ec0a30] text-[#D7D7D7] text-sm px-4 py-2 rounded-full font-medium'>Portrait Sessions</span>
-                              <span className='bg-[#ec0a30] text-[#D7D7D7] text-sm px-4 py-2 rounded-full font-medium'>Event Photography</span>
-                              <span className='bg-[#ec0a30] text-[#D7D7D7] text-sm px-4 py-2 rounded-full font-medium'>Commercial Shoots</span>
+                            {isEditingSpecialization ? (
+                              <div>
+                                <div className='grid grid-cols-1 xl:grid-cols-2 gap-3'>
+                                  {editedSpecialization.map((item, index) => (
+                                    <div key={index} className='flex flex-col'>
+                                      <div className='flex items-center gap-3'>
+                                        <input type="text" value={item} onChange={(e) => {const newItems = [...editedSpecialization]; newItems[index] = e.target.value; setEditedSpecialization(newItems); const newErrors = [...editSpecializationError]; newErrors[index] = ''; setEditSpecializationError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editSpecializationError[index] ? 'border-red-500' : 'border-gray-600'}`} />
+                                        <button onClick={() => {const newItems = editedSpecialization.filter((_, i) => i !== index); setEditedSpecialization(newItems)}} type='button' className='text-red-500 hover:text-red-700 transition cursor-pointer'>
+                                          <ImBin size={14} />
+                                        </button>
+                                      </div>
+                                      {editSpecializationError[index] && (
+                                        <span className='text-red-500 text-xs mt-1'>{editSpecializationError[index]}</span>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className='flex gap-2 my-4'>
+                                  <button onClick={updateSpecialization} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>Save</button>
+                                  <button onClick={() => {setIsEditingSpecialization(false); setEditSpecializationError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>Cancel</button>
+                                </div>
+                              </div>
+                            ):(
+                              <div>
+                                {profileData.specializations.length > 0 && (
+                                  <div className='flex flex-wrap gap-3 mb-4'>
+                                    {profileData.specializations.map((item, index) => (
+                                      <span key={index} className='bg-[#ec0a30] text-[#D7D7D7] text-sm px-4 py-2 rounded-full font-medium'>{item}</span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {isAddingSpecialization && (
+                              <div>
+                                <div className='flex gap-2'>
+                                  <input type="text" value={newSpecialization} onChange={(e) => {setNewSpecialization(e.target.value); if(showSpecializationError) setShowSpecializationError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showSpecializationError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Food Photography' />
+                                  <button onClick={addNewSpecialization} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                    <RiAddLine size={16} />
+                                  </button>
+                                </div>
+                                {showSpecializationError && (
+                                  <span className='text-red-500 text-xs block mt-1'>{showSpecializationError}</span>
+                                )}
+                              </div>
+                            )}
+                            <div className={`text-center ${profileData.specializations.length === 0 ? 'py-8' : 'pt-4'} text-[#D7D7D7]`}>
+                              {profileData.specializations.length === 0 && (
+                                <p className='text-sm mb-4'>Add your specialization details</p>
+                              )}
+                              {!isEditingSpecialization && !isAddingSpecialization && (
+                                <button onClick={() => setIsAddingSpecialization(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  <FiPlus size={16} />
+                                  Add Information
+                                </button>
+                              )}
+                              {isAddingSpecialization && (
+                                <button onClick={() => {setIsAddingSpecialization(false); setShowSpecializationError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  Cancel
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

@@ -172,11 +172,68 @@ const updateAchievement = async (req, res) => {
     }
 }
 
+const addSpecialization = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {specializations} = req.body
+
+        if(!specializations || specializations.trim() === ''){
+            return res.status(400).json({success:false, message:'Specialization is required'})
+        }
+
+        const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {$push:{specializations:specializations.trim()}}, {new:true})
+
+        if(!profile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, specializations:profile.specializations})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const updateSpecialization = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {specializations} = req.body
+
+        if(!specializations){
+            return res.status(400).json({success:false, message:'Specialization is required'})
+        }
+
+        if(!Array.isArray(specializations)){
+            return res.status(400).json({success:false, message:'Specialization must be an array'})
+        }
+
+        if(specializations.some(item => typeof item !== 'string' || item.trim() === '')){
+            return res.status(400).json({success:false, message:'each specialization item must be a non empty string'})
+        }
+
+        const updatedSpecialization = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {specializations}, {new:true})
+        res.status(200).json({success:true, specializations:updatedSpecialization.specializations})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
     addEquipment,
     updateEquipment,
     addAchievement,
-    updateAchievement
+    updateAchievement,
+    addSpecialization,
+    updateSpecialization
 }

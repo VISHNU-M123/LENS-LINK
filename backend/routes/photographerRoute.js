@@ -2,7 +2,7 @@ import express from 'express'
 import { registerPhotographer, resendPhotographerOtp, verifyLoginPhotographer, verifyPhotographerOtp } from '../controllers/photographerController.js'
 import photographerMiddleware from '../middlewares/photographerMiddleware.js'
 import { addService, deleteService, loadAllServices, loadEditService, toggleServiceStatus, updateService } from '../controllers/serviceController.js'
-import { addAchievement, addEquipment, getProfile, updateAbout, updateAchievement, updateEquipment } from '../controllers/photographerProfileController.js'
+import { addAchievement, addEquipment, addSpecialization, getProfile, updateAbout, updateAchievement, updateEquipment, updateSpecialization } from '../controllers/photographerProfileController.js'
 
 const photographerRouter = express.Router()
 
@@ -25,5 +25,8 @@ photographerRouter.post('/updateEquipment', photographerMiddleware, updateEquipm
 
 photographerRouter.post('/addAchievement', photographerMiddleware, addAchievement)
 photographerRouter.post('/updateAchievement', photographerMiddleware, updateAchievement)
+
+photographerRouter.post('/addSpecialization', photographerMiddleware, addSpecialization)
+photographerRouter.post('/updateSpecialization', photographerMiddleware, updateSpecialization)
 
 export default photographerRouter
