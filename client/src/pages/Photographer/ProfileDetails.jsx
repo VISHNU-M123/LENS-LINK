@@ -26,7 +26,7 @@ const ProfileDetails = () => {
 
     const [showSidebarItems, setShowSidebarItems] = useState(true)
     const [editModes, setEditModes] = useState({profile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
-    const [profileData, setProfileData] = useState({equipment:[], achievements:[], specializations:[]})
+    const [profileData, setProfileData] = useState({equipment:[], achievements:[], specializations:[], socialLinks:[]})
     const [aboutText, setAboutText] = useState('')
     const [showAboutError, setShowAboutError] = useState('')
 
@@ -50,6 +50,13 @@ const ProfileDetails = () => {
     const [isEditingSpecialization, setIsEditingSpecialization] = useState(false)
     const [editedSpecialization, setEditedSpecialization] = useState([])
     const [editSpecializationError, setEditSpecializationError] = useState([])
+
+    const [newSocialLink, setNewSocialLink] = useState({platform:'', url:''})
+    const [isAddingSocialLink, setIsAddingSocialLink] = useState(false)
+    const [showSocialLinkError, setShowSocialLinkError] = useState('')
+    const [isEditingSocialLink, setIsEditingSocialLink] = useState(false)
+    const [editedSocialLink, setEditedSocialLink] = useState([])
+    const [editSocialLinkError, setEditSocialLinkError] = useState([])
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -298,6 +305,73 @@ const ProfileDetails = () => {
           setProfileData(prev => ({...prev, specializations:data.specializations}))
           setIsEditingSpecialization(false)
           alert('specializations edited successfully')
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const addNewSocialLink = async () => {
+      try {
+        setShowSocialLinkError('')
+
+        if(!newSocialLink.platform || newSocialLink.platform.trim() === ''){
+          setShowSocialLinkError('Platform is required')
+          return
+        }
+
+        if(!newSocialLink.url || newSocialLink.url.trim() === ''){
+          setShowSocialLinkError('URL is required')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/addSocialLink`, {platform:newSocialLink.platform, url:newSocialLink.url}, {headers:{photographerToken}})
+        if(data.success){
+          alert('new social link added successfully')
+          setProfileData(prev => ({...prev, socialLinks:data.socialLinks}))
+          setNewSocialLink({platform:'', url:''})
+          setIsAddingSocialLink(false)
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
+    const updateSocialLink = async () => {
+      try {
+        const errors = Array(editedSocialLink.length).fill({platform:'', url:''})
+        let hasError = false
+
+        const cleanedSocialLink = editedSocialLink.map((item, index) => {
+          let platform = item.platform.trim()
+          let url = item.url.trim()
+
+          if(!platform){
+            errors[index] = {...errors[index], platform:'Platform cannot be empty'}
+            hasError = true
+          }
+
+          if(!url){
+            errors[index] = {...errors[index], url:'URL cannot be empty'}
+            hasError = true
+          }
+
+          return {platform, url}
+        })
+
+        setEditSocialLinkError(errors)
+
+        if(hasError) return
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateSocialLink`, {socialLinks:cleanedSocialLink}, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, socialLinks:data.socialLinks}))
+          setIsEditingSocialLink(false)
+          alert('social links edited successfully')
         }else{
           alert(data.message)
         }
@@ -675,29 +749,122 @@ const ProfileDetails = () => {
                           <div className="py-[28px] px-[25px]">
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Social Links</h1>
-                              <button className='text-[#ec0a30] hover:text-red-400 transition'>
-                                <RiEdit2Fill size={18} />
-                              </button>
+                              {profileData.socialLinks.length > 0 && (
+                                <button onClick={() => {setEditedSocialLink([...profileData.socialLinks]); setEditSocialLinkError(profileData.socialLinks.map(() => ({platform:'', url:''}))); setIsEditingSocialLink(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                  <RiEdit2Fill size={18} />
+                                </button>
+                              )}
                             </div>
-                            <div className='flex flex-col flex-wrap gap-3'>
-                              <div className='flex gap-3 items-center'>
-                                <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                  <FaInstagram size={20} />
-                                </button>
-                                <p className='text-[#D7D7D7] text-sm'>photographer_instagram_id</p>
+                            {isEditingSocialLink ? (
+                              <div>
+                                <div className='grid grid-cols-1 gap-3'>
+                                  {editedSocialLink.map((item, index) => (
+                                    <div key={index} className='flex flex-col'>
+                                      <div className='flex flex-col gap-3'>
+                                        <select name="" id="" value={item.platform} onChange={(e) => {const newItems = [...editedSocialLink]; newItems[index].platform = e.target.value; setEditedSocialLink(newItems); const newErrors = [...editSocialLinkError]; newErrors[index] = ''; setEditSocialLinkError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editSocialLinkError[index].platform ? 'border-red-500' : 'border-gray-600'}`}>
+                                          <option value="">Select platform</option>
+                                          <option value="Instagram">Instagram</option>
+                                          <option value="Facebook">Facebook</option>
+                                          <option value="Twitter">Twitter</option>
+                                          <option value="LinkedIn">LinkedIn</option>
+                                          <option value="Website">Website</option>
+                                        </select>
+                                        {editSocialLinkError[index].platform && (
+                                          <span className='text-red-500 text-xs -mt-1'>{editSocialLinkError[index].platform}</span>
+                                        )}
+                                        
+                                        <div className='flex flex-col'>
+                                          <div className='flex gap-2'>
+                                            <input type="text" value={item.url} onChange={(e) => {const newItems = [...editedSocialLink]; newItems[index].url = e.target.value; setEditedSocialLink(newItems); const newErrors = [...editSocialLinkError]; newErrors[index] = ''; setEditSocialLinkError(newErrors)}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${editSocialLinkError[index].url ? 'border-red-500' : 'border-gray-600'}`} />
+                                            <button onClick={() => {const newItems = editedSocialLink.filter((_, i) => i !== index); setEditedSocialLink(newItems)}} type='button' className='text-red-500 hover:text-red-700 transition cursor-pointer'>
+                                              <ImBin size={14} />
+                                            </button>
+                                          </div>
+                                          {editSocialLinkError[index].url && (
+                                            <span className='text-red-500 text-xs mt-1'>{editSocialLinkError[index].url}</span>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                                <div className='flex gap-2 my-4'>
+                                  <button onClick={updateSocialLink} className='w-full xl:w-fit bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>Save</button>
+                                  <button onClick={() => {setIsEditingSocialLink(false); setEditSocialLinkError([])}} className='w-full xl:w-fit bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>Cancel</button>
+                                </div>
                               </div>
-                              <div className='flex gap-3 items-center'>
-                                <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                  <FiFacebook size={20} />
-                                </button>
-                                <p className='text-[#D7D7D7] text-sm'>photographer_facebook_id</p>
+                            ):(
+                              <div>
+                                {profileData.socialLinks.length > 0 && (
+                                  <div className='flex flex-col flex-wrap gap-3 mb-4'>
+                                    {profileData.socialLinks.map((item, index) => {
+
+                                      const getIcon = (platform) => {
+                                        switch (platform) {
+                                          case 'Instagram' :
+                                            return <FaInstagram size={20} />;
+                                          case 'Facebook' :
+                                            return <FiFacebook size={20} />;
+                                          case 'Twitter' :
+                                            return <FiTwitter size={20} />;
+                                          case 'Linkedin' :
+                                            return <FiMapPin size={20} />;
+                                          case 'Website' :
+                                            return <FiMapPin size={20} />;
+                                          default :
+                                          return <FiMapPin size={20} />
+                                        }
+                                      }
+
+                                      return (
+                                        <div key={index} className='flex gap-3 items-center'>
+                                          <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
+                                            {getIcon(item.platform)}
+                                          </button>
+                                          <p className='text-[#D7D7D7] text-sm'>{item.url}</p>
+                                        </div>
+                                      )
+                                    })}
+                                  </div>
+                                )}
                               </div>
-                              <div className='flex gap-3 items-center'>
-                                <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                  <FiTwitter size={20} />
-                                </button>
-                                <p className='text-[#D7D7D7] text-sm'>photographer_twitter_id</p>
+                            )}
+                            {isAddingSocialLink && (
+                              <div className='flex flex-col gap-3'>
+                                <select name="" id="" value={newSocialLink.platform} onChange={(e) => {setNewSocialLink((prev) => ({...prev, platform:e.target.value})); if(showSocialLinkError) setShowSocialLinkError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showSocialLinkError ? 'border-red-500' : 'border-gray-600'}`}>
+                                  <option value="">Select Platform</option>
+                                  <option value="Instagram">Instagram</option>
+                                  <option value="Facebook">Facebook</option>
+                                  <option value="Twitter">Twitter</option>
+                                  <option value="LinkedIn">LinkedIn</option>
+                                  <option value="Website">Website</option>
+                                </select>
+                                <div className='flex gap-2'>
+                                  <input type="text" value={newSocialLink.url} onChange={(e) => {setNewSocialLink((prev) => ({...prev, url:e.target.value})); if(showSocialLinkError) setShowSocialLinkError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showSocialLinkError ? 'border-red-500' : 'border-gray-600'}`} placeholder='Enter URL' />
+                                  <button onClick={addNewSocialLink} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                    <RiAddLine size={16} />
+                                  </button>
+                                </div>  
+                                {showSocialLinkError && (
+                                  <span className='text-red-500 text-xs block -mt-1'>{showSocialLinkError}</span>
+                                )}
                               </div>
+                            )}
+                            <div className={`text-center ${profileData.socialLinks.length === 0 ? 'py-8' : 'pt-4'} text-[#D7D7D7]`}>
+                              {profileData.socialLinks.length === 0 && (
+                                <p className='text-sm mb-4'>Add your social links</p>
+                              )}
+                              {!isEditingSocialLink && !isAddingSocialLink && (
+                                <button onClick={() => setIsAddingSocialLink(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  <FiPlus size={16} />
+                                  Add Information
+                                </button>
+                              )}
+                              {isAddingSocialLink && (
+                                <button onClick={() => {setIsAddingSocialLink(false); setShowSocialLinkError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  Cancel
+                                </button>
+                              )}
                             </div>
                           </div>
                         </div>

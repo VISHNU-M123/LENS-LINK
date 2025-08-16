@@ -227,6 +227,70 @@ const updateSpecialization = async (req, res) => {
     }
 }
 
+const addSocialLink = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {platform, url} = req.body
+
+        if(!platform || platform.trim() === ''){
+            return res.status(400).json({success:false, message:'Platform is required'})
+        }
+
+        if(!url || url.trim() === ''){
+            return res.status(400).json({success:false, message:'URL is required'})
+        }
+
+        const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {$push:{socialLinks:{platform:platform.trim(), url:url.trim()}}}, {new:true})
+
+        if(!profile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, socialLinks:profile.socialLinks})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const updateSocialLink = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {socialLinks} = req.body
+
+        if(!socialLinks){
+            return res.status(400).json({success:false, message:'Social links are required'})
+        }
+
+        if(!Array.isArray(socialLinks)){
+            return res.status(400).json({success:false, message:'Social links must be an array'})
+        }
+
+        for(let link of socialLinks){
+            if(!link.platform || typeof link.platform !== 'string' || link.platform.trim() === ''){
+                return res.status(400).json({success:false, message:'Each link must have a valid platform'})
+            }
+            if(!link.url || typeof link.url !== 'string' || link.url.trim() === ''){
+                return res.status(400).json({success:false, message:'Each link must have a valid url'})
+            }
+        }
+
+        const updatedSocialLink = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {socialLinks}, {new:true})
+        res.status(200).json({success:true, socialLinks:updatedSocialLink.socialLinks})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
@@ -235,5 +299,7 @@ export {
     addAchievement,
     updateAchievement,
     addSpecialization,
-    updateSpecialization
+    updateSpecialization,
+    addSocialLink,
+    updateSocialLink
 }
