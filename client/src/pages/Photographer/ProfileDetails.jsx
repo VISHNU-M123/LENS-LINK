@@ -19,6 +19,9 @@ import { PhotographerContext } from '../../context/PhotographerContext';
 import { FiPlus } from "react-icons/fi";
 import { RiAddLine } from "react-icons/ri";
 import { ImBin } from "react-icons/im";
+import { FaLinkedin } from "react-icons/fa6";
+import { FaGlobe } from "react-icons/fa";
+import { IoBriefcaseOutline } from "react-icons/io5";
 
 const ProfileDetails = () => {
 
@@ -410,11 +413,17 @@ const ProfileDetails = () => {
                                 </div> */}
                               </div>
                               <div className='pb-2'>
-                                  <h1 className='text-3xl font-bold text-white mb-1'>Photographer name</h1>
-                                  <p className='text-lg text-[#ec0a30] font-medium mb-2'>Studio name</p>
-                                  <div className='flex items-center gap-2'>
-                                    <FiMapPin size={16} className='text-[#D7D7D7]' />
-                                    <span className='text-[#D7D7D7]'>Location</span>
+                                  <h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1'>Photographer name</h1>
+                                  <p className='text-base sm:text-lg text-[#ec0a30] font-medium mb-2'>Studio name</p>
+                                  <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-2'>
+                                    <div className='flex items-center gap-2'>
+                                      <FiMapPin size={16} className='text-[#D7D7D7]' />
+                                      <span className='text-[#D7D7D7] text-xs md:text-sm'>Location</span>
+                                    </div>
+                                    <div className='flex items-center gap-2'>
+                                      <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
+                                      <span className='text-[#D7D7D7] text-xs md:text-sm'>50 + years Experience</span>
+                                    </div>
                                   </div>
                               </div>
                               <div className='absolute bottom-2 right-2 bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
@@ -446,8 +455,8 @@ const ProfileDetails = () => {
                                   <span className='text-red-500 text-xs block -mt-1'>{showAboutError}</span>
                                 )}
                                 <div className='flex gap-2'>
-                                  <button type='button' onClick={saveAbout} className='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm'>Save</button>
-                                  <button type='button' onClick={cancelEdit} className='bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm'>Cancel</button>
+                                  <button type='button' onClick={saveAbout} className='bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>Save</button>
+                                  <button type='button' onClick={cancelEdit} className='bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>Cancel</button>
                                 </div>
                               </div>
                             ):(
@@ -461,7 +470,7 @@ const ProfileDetails = () => {
                                 <div className='text-center py-8 text-[#D7D7D7]'>
                                   <p className='text-sm mb-4'>Add a description about yourself to let clients know more about your photography style and experience.</p>
 
-                                  <button onClick={() => toggleEditMode('about')} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                  <button onClick={() => toggleEditMode('about')} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                       <FiPlus size={16} />
                                       Add Information
                                   </button>
@@ -556,7 +565,7 @@ const ProfileDetails = () => {
                               <div>
                                 <div className='flex gap-2'>
                                   <input value={newEquipment} onChange={(e) => {setNewEquipment(e.target.value); if(showEquipmentError) setShowEquipmentError('')}} type="text" className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showEquipmentError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Canon EOS R5, Professional Lighting Kit' />
-                                  <button onClick={addNewEquipment} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                  <button onClick={addNewEquipment} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition cursor-pointer'>
                                     <RiAddLine size={16} />
                                   </button>
                                 </div>
@@ -570,13 +579,13 @@ const ProfileDetails = () => {
                                 <p className='text-sm mb-4'>Add yor equipments details</p>
                               )}
                               {!isEditingEquipment && !isAddingEquipment && (
-                                <button onClick={() => setIsAddingEquipment(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => setIsAddingEquipment(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   <FiPlus size={16} />
                                   Add Information
                                 </button>
                               )}
                               {isAddingEquipment && (
-                                <button onClick={() => {setIsAddingEquipment(false); setShowEquipmentError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => {setIsAddingEquipment(false); setShowEquipmentError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   Cancel
                                 </button>
                               )}
@@ -590,7 +599,7 @@ const ProfileDetails = () => {
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Achievements</h1>
                               {profileData.achievements.length > 0 && (
-                                <button onClick={() => {setEditedAchievement([...profileData.achievements]); setIsEditingAchievement(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                <button onClick={() => {setEditedAchievement([...profileData.achievements]); setIsEditingAchievement(true)}} className='text-[#ec0a30] hover:text-red-400 transition cursor-pointer'>
                                   <RiEdit2Fill size={18} />
                                 </button>
                               )}
@@ -637,7 +646,7 @@ const ProfileDetails = () => {
                               <div>
                                 <div className="flex gap-2">
                                   <input value={newAchievement} onChange={(e) => {setNewAchievement(e.target.value); if(showAchievementError) setShowAchievementError('')}} type="text" className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showAchievementError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Wedding Photographer of the Year 2023' />
-                                  <button onClick={addNewAchievement} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                  <button onClick={addNewAchievement} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition cursor-pointer'>
                                     <RiAddLine size={16} />
                                   </button>
                                 </div>
@@ -651,13 +660,13 @@ const ProfileDetails = () => {
                                 <p className='text-sm mb-4'>Add your achievement details</p>
                               )}
                               {!isEditingAchievement && !isAddingAchievement && (
-                                <button onClick={() => setIsAddingAchievement(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => setIsAddingAchievement(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   <FiPlus size={16} />
                                   Add Information
                                 </button>
                               )}
                               {isAddingAchievement && (
-                                <button onClick={() => {setIsAddingAchievement(false); setShowAchievementError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => {setIsAddingAchievement(false); setShowAchievementError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   Cancel
                                 </button>
                               )}
@@ -674,7 +683,7 @@ const ProfileDetails = () => {
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Specialisations</h1>
                               {profileData.specializations.length > 0 && (
-                                <button onClick={() => {setEditedSpecialization([...profileData.specializations]); setIsEditingSpecialization(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                <button onClick={() => {setEditedSpecialization([...profileData.specializations]); setIsEditingSpecialization(true)}} className='text-[#ec0a30] hover:text-red-400 transition cursor-pointer'>
                                   <RiEdit2Fill size={18} />
                                 </button>
                               )}
@@ -716,7 +725,7 @@ const ProfileDetails = () => {
                               <div>
                                 <div className='flex gap-2'>
                                   <input type="text" value={newSpecialization} onChange={(e) => {setNewSpecialization(e.target.value); if(showSpecializationError) setShowSpecializationError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showSpecializationError ? 'border-red-500' : 'border-gray-600'}`} placeholder='e.g., Food Photography' />
-                                  <button onClick={addNewSpecialization} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                  <button onClick={addNewSpecialization} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition cursor-pointer'>
                                     <RiAddLine size={16} />
                                   </button>
                                 </div>
@@ -730,13 +739,13 @@ const ProfileDetails = () => {
                                 <p className='text-sm mb-4'>Add your specialization details</p>
                               )}
                               {!isEditingSpecialization && !isAddingSpecialization && (
-                                <button onClick={() => setIsAddingSpecialization(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => setIsAddingSpecialization(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   <FiPlus size={16} />
                                   Add Information
                                 </button>
                               )}
                               {isAddingSpecialization && (
-                                <button onClick={() => {setIsAddingSpecialization(false); setShowSpecializationError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => {setIsAddingSpecialization(false); setShowSpecializationError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   Cancel
                                 </button>
                               )}
@@ -750,7 +759,7 @@ const ProfileDetails = () => {
                             <div className='flex justify-between items-center mb-[18px]'>
                               <h1 className="text-white text-[18px] font-[500]">Social Links</h1>
                               {profileData.socialLinks.length > 0 && (
-                                <button onClick={() => {setEditedSocialLink([...profileData.socialLinks]); setEditSocialLinkError(profileData.socialLinks.map(() => ({platform:'', url:''}))); setIsEditingSocialLink(true)}} className='text-[#ec0a30] hover:text-red-400 transition'>
+                                <button onClick={() => {setEditedSocialLink(profileData.socialLinks.map(link => ({...link}))); setEditSocialLinkError(profileData.socialLinks.map(() => ({platform:'', url:''}))); setIsEditingSocialLink(true)}} className='text-[#ec0a30] hover:text-red-400 transition cursor-pointer'>
                                   <RiEdit2Fill size={18} />
                                 </button>
                               )}
@@ -807,10 +816,10 @@ const ProfileDetails = () => {
                                             return <FiFacebook size={20} />;
                                           case 'Twitter' :
                                             return <FiTwitter size={20} />;
-                                          case 'Linkedin' :
-                                            return <FiMapPin size={20} />;
+                                          case 'LinkedIn' :
+                                            return <FaLinkedin size={20} />;
                                           case 'Website' :
-                                            return <FiMapPin size={20} />;
+                                            return <FaGlobe size={20} />;
                                           default :
                                           return <FiMapPin size={20} />
                                         }
@@ -841,7 +850,7 @@ const ProfileDetails = () => {
                                 </select>
                                 <div className='flex gap-2'>
                                   <input type="text" value={newSocialLink.url} onChange={(e) => {setNewSocialLink((prev) => ({...prev, url:e.target.value})); if(showSocialLinkError) setShowSocialLinkError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showSocialLinkError ? 'border-red-500' : 'border-gray-600'}`} placeholder='Enter URL' />
-                                  <button onClick={addNewSocialLink} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition'>
+                                  <button onClick={addNewSocialLink} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition cursor-pointer'>
                                     <RiAddLine size={16} />
                                   </button>
                                 </div>  
@@ -855,13 +864,13 @@ const ProfileDetails = () => {
                                 <p className='text-sm mb-4'>Add your social links</p>
                               )}
                               {!isEditingSocialLink && !isAddingSocialLink && (
-                                <button onClick={() => setIsAddingSocialLink(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => setIsAddingSocialLink(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   <FiPlus size={16} />
                                   Add Information
                                 </button>
                               )}
                               {isAddingSocialLink && (
-                                <button onClick={() => {setIsAddingSocialLink(false); setShowSocialLinkError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto'>
+                                <button onClick={() => {setIsAddingSocialLink(false); setShowSocialLinkError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   Cancel
                                 </button>
                               )}
