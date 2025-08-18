@@ -811,23 +811,23 @@ const ProfileDetails = () => {
                                       const getIcon = (platform) => {
                                         switch (platform) {
                                           case 'Instagram' :
-                                            return <FaInstagram size={20} />;
+                                            return <FaInstagram className="w-4 h-4 sm:w-5 sm:h-5" />;
                                           case 'Facebook' :
-                                            return <FiFacebook size={20} />;
+                                            return <FiFacebook className="w-4 h-4 sm:w-5 sm:h-5" />;
                                           case 'Twitter' :
-                                            return <FiTwitter size={20} />;
+                                            return <FiTwitter className="w-4 h-4 sm:w-5 sm:h-5" />;
                                           case 'LinkedIn' :
-                                            return <FaLinkedin size={20} />;
+                                            return <FaLinkedin className="w-4 h-4 sm:w-5 sm:h-5" />;
                                           case 'Website' :
-                                            return <FaGlobe size={20} />;
+                                            return <FaGlobe className="w-4 h-4 sm:w-5 sm:h-5" />;
                                           default :
-                                          return <FiMapPin size={20} />
+                                          return <FiMapPin className="w-4 h-4 sm:w-5 sm:h-5" />
                                         }
                                       }
 
                                       return (
                                         <div key={index} className='flex gap-3 items-center'>
-                                          <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
+                                          <button className='bg-[#ec0a30] w-fit hover:bg-[#701313] text-white p-2 sm:p-3 rounded-md sm:rounded-xl hover:shadow-lg transition-all cursor-pointer'>
                                             {getIcon(item.platform)}
                                           </button>
                                           <p className='text-[#D7D7D7] text-sm'>{item.url}</p>
