@@ -29,7 +29,7 @@ const ProfileDetails = () => {
 
     const [showSidebarItems, setShowSidebarItems] = useState(true)
     const [editModes, setEditModes] = useState({profile:false, about:false, contact:false, equipment:false, achievements:false, specializations:false, socialLinks:false})
-    const [profileData, setProfileData] = useState({equipment:[], achievements:[], specializations:[], socialLinks:[]})
+    const [profileData, setProfileData] = useState({equipment:[], achievements:[], specializations:[], socialLinks:[], photographer:{}})
     const [aboutText, setAboutText] = useState('')
     const [showAboutError, setShowAboutError] = useState('')
 
@@ -60,6 +60,12 @@ const ProfileDetails = () => {
     const [isEditingSocialLink, setIsEditingSocialLink] = useState(false)
     const [editedSocialLink, setEditedSocialLink] = useState([])
     const [editSocialLinkError, setEditSocialLinkError] = useState([])
+
+    const [newWhatsapp, setNewWhatsapp] = useState('')
+    const [isAddingWhatsapp, setIsAddingWhatsapp] = useState(false)
+    const [showWhatsappError, setShowWhatsappError] = useState('')
+    const [isEditingWhatsapp, setIsEditingWhatsapp] = useState(false)
+    const [editedWhatsapp, setEditedWhatsapp] = useState('')
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -383,6 +389,27 @@ const ProfileDetails = () => {
       }
     }
 
+    const addWhatsapp = async () => {
+      try {
+        if(!newWhatsapp || newWhatsapp.trim() === ''){
+          setShowWhatsappError('Whatsapp number is required')
+          return
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/addWhatsapp`, {whatsapp:newWhatsapp}, {headers:{photographerToken}})
+        if(data.success){
+          alert('whatsapp added successfully')
+          setProfileData(prev => ({...prev, whatsapp:newWhatsapp}))
+          setIsAddingWhatsapp(false)
+          setNewWhatsapp('')
+        }else{
+          setShowWhatsappError(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
   return (
     <div>
       <div className='flex'>
@@ -493,16 +520,71 @@ const ProfileDetails = () => {
                             <div className='space-y-3'>
                               <div className='flex items-center gap-3'>
                                 <LuPhone size={18} className='text-[#ec0a30]' />
-                                <span className='text-[#D7D7D7] text-sm'>9874563210</span>
+                                <span className='text-[#D7D7D7] text-sm'>{profileData.photographer.mobile}</span>
                               </div>
                               <div className='flex items-center gap-3'>
                                 <CiMail size={18} strokeWidth={1} className='text-[#ec0a30]' />
-                                <span className='text-[#D7D7D7] text-sm'>abcdefg@gmail.com</span>
+                                <span className='text-[#D7D7D7] text-sm'>{profileData.photographer.email}</span>
                               </div>
-                              <div className='flex items-center gap-3'>
-                                <FaWhatsapp size={18} strokeWidth={1} className='text-[#ec0a30]' />
-                                <a href="https://wa.me/9874563210" target='_blank' rel="noopener noreferrer" className='text-[#D7D7D7] text-sm'>9874563210</a>
-                              </div>
+                              {isEditingWhatsapp ? (
+                                <div>
+                                  <div className="flex flex-col">
+                                    <div className='flex items-center gap-3'>
+                                      <input type="text" value={editedWhatsapp} onChange={(e) => {setEditedWhatsapp(e.target.value); setShowWhatsappError('')}} className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showWhatsappError ? 'border-red-500' : 'border-gray-600'}`} />
+                                      <button type='button' className='text-red-500 hover:text-red-700 transition cursor-pointer'>
+                                        <ImBin size={14} />
+                                      </button>
+                                    </div>
+                                    {showWhatsappError && (
+                                      <span className='text-red-500 text-xs mt-1'>{showWhatsappError}</span>
+                                    )}
+                                  </div>
+                                  <div className='flex gap-2 my-4'>
+                                    <button className='bg-green-600 text-white px-3 py-2 rounded hover:bg-green-700 transition text-sm cursor-pointer'>Save</button>
+                                    <button onClick={() => setIsEditingWhatsapp(false)} className='bg-gray-600 text-white px-3 py-2 rounded hover:bg-gray-700 transition text-sm cursor-pointer'>Cancel</button>
+                                  </div>
+                                </div>
+                              ):(
+                                <>
+                                  {profileData.whatsapp && (
+                                    <div className='flex items-center gap-3'>
+                                      <FaWhatsapp size={18} strokeWidth={1} className='text-[#ec0a30]' />
+                                      <a href="https://wa.me/9874563210" target='_blank' rel="noopener noreferrer" className='text-[#D7D7D7] text-sm'>{profileData.whatsapp}</a>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                              {isAddingWhatsapp && (
+                                <div>
+                                  <div className='flex gap-2'>
+                                    <input value={newWhatsapp} onChange={(e) => {setNewWhatsapp(e.target.value); if(showWhatsappError) setShowWhatsappError('')}} type="text" className={`flex-1 bg-[#2a2d36] text-[#D7D7D7] px-3 py-2 rounded border text-sm outline-none ${showWhatsappError ? 'border-red-500' : 'border-gray-600'}`} placeholder='Add whatsapp number' />
+                                    <button onClick={addWhatsapp} className='bg-[#ec0a30] text-white px-3 py-2 rounded hover:bg-red-700 transition cursor-pointer'>
+                                      <RiAddLine size={16} />
+                                    </button>
+                                  </div>
+                                  {showWhatsappError && (
+                                    <span className='text-red-500 text-xs block mt-1'>{showWhatsappError}</span>
+                                  )}
+                                </div>
+                              )}
+                              {!profileData.whatsapp && (
+                                <div className={`text-center text-[#D7D7D7] pt-4`}>
+                                  {/* {!profileData.whatsapp && (
+                                    <p className='text-sm mb-4'>Add your whatsapp number</p>
+                                  )} */}
+                                  {!isEditingWhatsapp && !isAddingWhatsapp && (
+                                    <button onClick={() => setIsAddingWhatsapp(true)} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
+                                      <FiPlus size={16} />
+                                      Add Whatsapp
+                                    </button>
+                                  )}
+                                  {isAddingWhatsapp && (
+                                    <button onClick={() => {setIsAddingWhatsapp(false); setShowWhatsappError('')}} className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
+                                      Cancel
+                                    </button>
+                                  )}
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

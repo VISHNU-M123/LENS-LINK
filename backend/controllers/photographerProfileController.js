@@ -1,3 +1,4 @@
+import photographerModel from "../models/photographerModel.js";
 import photographerProfileModel from "../models/photographerProfileModel.js"
 import sanitizeHtml from 'sanitize-html';
 
@@ -50,7 +51,7 @@ const getProfile = async (req, res) => {
             return res.status(400).json({success:false, message:'Photographer not found'})
         }
 
-        const profile = await photographerProfileModel.findOne({photographer:photographerId})
+        const profile = await photographerProfileModel.findOne({photographer:photographerId}).populate('photographer', 'name email mobile')
 
         if(!profile){
             return res.status(400).json({success:false, message:'Profile not found'})
@@ -291,6 +292,77 @@ const updateSocialLink = async (req, res) => {
     }
 }
 
+const addWhatsapp = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {whatsapp} = req.body
+
+        if(!whatsapp || whatsapp.trim() === ''){
+            return res.status(400).json({success:false, message:'whatsapp number is required'})
+        }
+
+        const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {whatsapp}, {new:true}).populate('photographer', 'name email mobile')
+
+        if(!profile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, whatsapp:profile.whatsapp})
+
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const updateContact = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {mobile, whatsapp} = req.body
+
+        if(!mobile || mobile.trim() === ''){
+            return res.status(400).json({success:false, message:'Mobile is required'})
+        }
+
+        // if(!whatsapp || whatsapp.trim() === ''){
+        //     return res.status(400).json({success:false, message:'Whatsapp is required'})
+        // }
+
+        const mobileRegex = /^[0-9]{10}$/
+        const isRepeatingDigits = /^(.)\1+$/.test(mobile)
+        if(!mobileRegex.test(mobile) || isRepeatingDigits){
+            return res.status(400).json({success:false, message:'Invalid mobile number'})
+        }
+
+        const whatsappRegex = /^[0-9]{10}$/
+        const isRepeatingWhatsapp = /^(.)\1+$/.test(whatsapp)
+        if(whatsapp && (!whatsappRegex.test(whatsapp) || isRepeatingWhatsapp)){
+            return res.status(400).json({success:false, message:'Invalid whatsapp number'})
+        }
+
+        const updatedPhotographer = await photographerModel.findByIdAndUpdate(photographerId, {mobile}, {new:true})
+
+        const updatedProfile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {whatsapp}, {new:true})
+
+        if(!updatedPhotographer || !updatedProfile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, contact:{mobile:updatedPhotographer.mobile, whatsapp:updatedProfile.whatsapp}})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
@@ -301,5 +373,7 @@ export {
     addSpecialization,
     updateSpecialization,
     addSocialLink,
-    updateSocialLink
+    updateSocialLink,
+    addWhatsapp,
+    updateContact
 }

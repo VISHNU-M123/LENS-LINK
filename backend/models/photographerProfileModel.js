@@ -25,6 +25,10 @@ const photographerProfileSchema = new mongoose.Schema({
         type:String,
         required:true
     },
+    whatsapp:{
+        type:String,
+        default:''
+    },
     specializations:{
         type:[String],
         default:[]

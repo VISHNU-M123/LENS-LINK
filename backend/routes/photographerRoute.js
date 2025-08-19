@@ -2,7 +2,7 @@ import express from 'express'
 import { registerPhotographer, resendPhotographerOtp, verifyLoginPhotographer, verifyPhotographerOtp } from '../controllers/photographerController.js'
 import photographerMiddleware from '../middlewares/photographerMiddleware.js'
 import { addService, deleteService, loadAllServices, loadEditService, toggleServiceStatus, updateService } from '../controllers/serviceController.js'
-import { addAchievement, addEquipment, addSocialLink, addSpecialization, getProfile, updateAbout, updateAchievement, updateEquipment, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
+import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhatsapp, getProfile, updateAbout, updateAchievement, updateContact, updateEquipment, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
 
 const photographerRouter = express.Router()
 
@@ -31,5 +31,8 @@ photographerRouter.post('/updateSpecialization', photographerMiddleware, updateS
 
 photographerRouter.post('/addSocialLink', photographerMiddleware, addSocialLink)
 photographerRouter.post('/updateSocialLink', photographerMiddleware, updateSocialLink)
+
+photographerRouter.post('/addWhatsapp', photographerMiddleware, addWhatsapp)
+photographerRouter.post('/updateContact', photographerMiddleware, updateContact)
 
 export default photographerRouter
