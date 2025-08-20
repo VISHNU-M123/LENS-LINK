@@ -306,6 +306,12 @@ const addWhatsapp = async (req, res) => {
             return res.status(400).json({success:false, message:'whatsapp number is required'})
         }
 
+        const whatsappRegex = /^[0-9]{10}$/
+        const isRepeatingWhatsapp = /^(.)\1+$/.test(whatsapp)
+        if(!whatsappRegex.test(whatsapp) || isRepeatingWhatsapp){
+            return res.status(400).json({success:false, message:'Invalid whatsapp number'})
+        }
+
         const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {whatsapp}, {new:true}).populate('photographer', 'name email mobile')
 
         if(!profile){
