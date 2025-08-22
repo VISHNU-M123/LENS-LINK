@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import Sidebar from '../../components/Photographer/Sidebar'
 import Navbar from '../../components/Photographer/Navbar'
-import coverImg from '../../assets/IndianWedding-Landing.jpg'
 import { RiImageEditLine } from "react-icons/ri";
 import profileImg from '../../assets/gallery-3.jpg'
 import { LuPhone } from "react-icons/lu";
@@ -459,6 +458,26 @@ const ProfileDetails = () => {
       }
     }
 
+    const updateCoverImage = async (e) => {
+      try {
+        const file = e.target.files[0]
+        if(!file) return
+
+        const formData = new FormData()
+        formData.append('coverImage', file)
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateCoverImage`, formData, {headers:{photographerToken}})
+        if(data.success){
+          setProfileData(prev => ({...prev, coverImage:data.coverImage}))
+          alert('cover image updated successfully')
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
   return (
     <div>
       <div className='flex'>
@@ -476,17 +495,22 @@ const ProfileDetails = () => {
                           <div className="relative py-[28px] px-[25px] h-64 sm:h-80 lg:h-96 overflow-hidden">
                             {profileData.coverImage ? (
                               <>
-                                <img src={coverImg} className='h-full w-full object-cover rounded-[4px]' alt="" />
+                                <img src={`${backendUrl}${profileData.coverImage}`} className='h-full w-full object-cover rounded-[4px]' alt="" />
                                 <div className='absolute bottom-10 right-10 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
                                   <RiImageEditLine color='white' size={22} />
                                 </div>
                               </>
                             ):(
                               <div className='text-center flex flex-col justify-center h-full w-full bg-gray-800 rounded-[4px] text-[#D7D7D7]'>
-                                <button className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
+                                <label htmlFor="coverImage" className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
                                   <FiPlus size={16} />
                                   Add Cover Image
-                                </button>
+                                </label>
+                                <input type="file" id='coverImage' onChange={updateCoverImage} className='hidden' accept='image/*' name='coverImage' />
+                                {/* <button className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
+                                  <FiPlus size={16} />
+                                  Add Cover Image
+                                </button> */}
                               </div>
                             )}
                           </div>

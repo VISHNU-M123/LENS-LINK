@@ -369,6 +369,32 @@ const updateContact = async (req, res) => {
     }
 }
 
+const updateCoverImage = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        if(!req.file){
+            return res.status(400).json({success:false, message:'No image uploaded'})
+        }
+        
+        const coverImage = `/uploads/${req.file.filename}`
+
+        const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {coverImage:coverImage}, {new:true})
+
+        if(!profile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, coverImage:profile.coverImage})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
@@ -381,5 +407,6 @@ export {
     addSocialLink,
     updateSocialLink,
     addWhatsapp,
-    updateContact
+    updateContact,
+    updateCoverImage
 }

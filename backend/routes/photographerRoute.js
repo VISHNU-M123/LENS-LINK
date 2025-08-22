@@ -2,7 +2,25 @@ import express from 'express'
 import { registerPhotographer, resendPhotographerOtp, verifyLoginPhotographer, verifyPhotographerOtp } from '../controllers/photographerController.js'
 import photographerMiddleware from '../middlewares/photographerMiddleware.js'
 import { addService, deleteService, loadAllServices, loadEditService, toggleServiceStatus, updateService } from '../controllers/serviceController.js'
-import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhatsapp, getProfile, updateAbout, updateAchievement, updateContact, updateEquipment, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
+import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhatsapp, getProfile, updateAbout, updateAchievement, updateContact, updateCoverImage, updateEquipment, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
+import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
+
+const storage = multer.diskStorage({
+    destination:function(req,file,cb){
+        cb(null, path.join(__dirname, '../public/uploads'))
+    },
+    filename:function(req,file,cb){
+        const name = Date.now()+'-'+file.originalname
+        cb(null, name)
+    }
+})
+
+const upload = multer({storage:storage})
 
 const photographerRouter = express.Router()
 
@@ -34,5 +52,7 @@ photographerRouter.post('/updateSocialLink', photographerMiddleware, updateSocia
 
 photographerRouter.post('/addWhatsapp', photographerMiddleware, addWhatsapp)
 photographerRouter.post('/updateContact', photographerMiddleware, updateContact)
+
+photographerRouter.post('/updateCoverImage', photographerMiddleware, upload.single('coverImage'), updateCoverImage)
 
 export default photographerRouter
