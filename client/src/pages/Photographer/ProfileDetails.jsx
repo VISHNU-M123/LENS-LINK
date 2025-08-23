@@ -496,9 +496,10 @@ const ProfileDetails = () => {
                             {profileData.coverImage ? (
                               <>
                                 <img src={`${backendUrl}${profileData.coverImage}`} className='h-full w-full object-cover rounded-[4px]' alt="" />
-                                <div className='absolute bottom-10 right-10 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
+                                <label htmlFor="coverImage" className='absolute bottom-10 right-10 z-20 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
                                   <RiImageEditLine color='white' size={22} />
-                                </div>
+                                </label>
+                                <input type="file" id='coverImage' onChange={updateCoverImage} className='hidden' accept='image/*' name='coverImage' />
                               </>
                             ):(
                               <div className='text-center flex flex-col justify-center h-full w-full bg-gray-800 rounded-[4px] text-[#D7D7D7]'>
@@ -507,10 +508,6 @@ const ProfileDetails = () => {
                                   Add Cover Image
                                 </label>
                                 <input type="file" id='coverImage' onChange={updateCoverImage} className='hidden' accept='image/*' name='coverImage' />
-                                {/* <button className='bg-[#ec0a30] text-white px-4 py-2 rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2 mx-auto cursor-pointer'>
-                                  <FiPlus size={16} />
-                                  Add Cover Image
-                                </button> */}
                               </div>
                             )}
                           </div>
@@ -524,18 +521,18 @@ const ProfileDetails = () => {
                                 </div> */}
                               </div>
                               <div className='pb-2'>
-                                  <h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1'>Photographer name</h1>
-                                  <p className='text-base sm:text-lg text-[#ec0a30] font-medium mb-2'>Studio name</p>
-                                  <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-2'>
-                                    <div className='flex items-center gap-2'>
-                                      <FiMapPin size={16} className='text-[#D7D7D7]' />
-                                      <span className='text-[#D7D7D7] text-xs md:text-sm'>Location</span>
-                                    </div>
-                                    <div className='flex items-center gap-2'>
-                                      <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
-                                      <span className='text-[#D7D7D7] text-xs md:text-sm'>50 + years Experience</span>
-                                    </div>
+                                <h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1'>{profileData.photographer.name}</h1>
+                                <p className='text-base sm:text-lg text-[#ec0a30] font-medium mb-2'>{profileData.studioName ? profileData.studioName : 'Studio name'}</p>
+                                <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-2'>
+                                  <div className='flex items-center gap-2'>
+                                    <FiMapPin size={16} className='text-[#D7D7D7]' />
+                                    <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.location ? profileData.location : 'Location'}</span>
                                   </div>
+                                  <div className='flex items-center gap-2'>
+                                    <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
+                                    <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.experience ? profileData.experience : '0 years Experience'}</span>
+                                  </div>
+                                </div>
                               </div>
                               <div className='absolute bottom-2 right-2 bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
                                 <RiEdit2Fill color='white' className='block md:hidden' size={18} />
