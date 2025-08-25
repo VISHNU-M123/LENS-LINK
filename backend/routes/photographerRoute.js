@@ -2,7 +2,7 @@ import express from 'express'
 import { registerPhotographer, resendPhotographerOtp, verifyLoginPhotographer, verifyPhotographerOtp } from '../controllers/photographerController.js'
 import photographerMiddleware from '../middlewares/photographerMiddleware.js'
 import { addService, deleteService, loadAllServices, loadEditService, toggleServiceStatus, updateService } from '../controllers/serviceController.js'
-import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhatsapp, getProfile, updateAbout, updateAchievement, updateContact, updateCoverImage, updateEquipment, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
+import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhatsapp, getProfile, updateAbout, updateAchievement, updateContact, updateCoverImage, updateEquipment, updateProfile, updateSocialLink, updateSpecialization } from '../controllers/photographerProfileController.js'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -54,5 +54,6 @@ photographerRouter.post('/addWhatsapp', photographerMiddleware, addWhatsapp)
 photographerRouter.post('/updateContact', photographerMiddleware, updateContact)
 
 photographerRouter.post('/updateCoverImage', photographerMiddleware, upload.single('coverImage'), updateCoverImage)
+photographerRouter.post('/updateProfile', photographerMiddleware, upload.single('profileImage'), updateProfile)
 
 export default photographerRouter

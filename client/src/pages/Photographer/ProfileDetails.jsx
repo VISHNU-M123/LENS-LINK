@@ -68,6 +68,9 @@ const ProfileDetails = () => {
     const [editedWhatsapp, setEditedWhatsapp] = useState('')
     const [showMobileError, setShowMobileError] = useState('')
 
+    const [isEditingProfile, setIsEditingProfile] = useState(false)
+    const [editedProfile, setEditedProfile] = useState({name:profileData.photographer.name || '', studioName:profileData.studioName || '', location:profileData.location || '', experience:profileData.experience || '', profileImage: null})
+
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
     }
@@ -478,6 +481,44 @@ const ProfileDetails = () => {
       }
     }
 
+    const handleProfileChange = (e) => {
+      setEditedProfile({
+        ...editedProfile,
+        [e.target.name]: e.target.value
+      })
+    }
+
+    const handleProfileImage = (e) => {
+      setEditedProfile({
+        ...editedProfile,
+        profileImage:e.target.files[0]
+      })
+    }
+
+    const updateProfile = async () => {
+      try {
+        const formData = new FormData()
+        formData.append("name", editedProfile.name);
+        formData.append("studioName", editedProfile.studioName);
+        formData.append("location", editedProfile.location);
+        formData.append("experience", editedProfile.experience);
+
+        if (editedProfile.profileImage) {
+          formData.append("profileImage", editedProfile.profileImage);
+        }
+
+        const {data} = await axios.post(`${backendUrl}/api/photographer/updateProfile`, formData, {headers:{photographerToken}})
+        if(data.success){
+          alert('profile details updated successfully')
+          setProfileData(prev => ({...prev, photographer:{...prev.photographer, name:data.profile.name, profileImage:data.profile.profileImage}, studioName:data.profile.studioName, location:data.profile.location, experience:data.profile.experience}))
+        }else{
+          alert(data.message)
+        }
+      } catch (error) {
+        console.log(error)
+      }
+    }
+
   return (
     <div>
       <div className='flex'>
@@ -515,28 +556,72 @@ const ProfileDetails = () => {
                           <div className='-mt-20 sm:-mt-24 lg:-mt-28 ml-6 sm:ml-10 p-5 relative z-10'>
                             <div className='relative flex flex-col sm:flex-row sm:items-end gap-4 sm:gap-6'>
                               <div className='relative'>
-                                <img src={profileImg} className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] object-cover rounded-lg' alt="" />
-                                {/* <div className='absolute bottom-2 right-2 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
-                                  <RiImageEditLine color='white' size={18} />
-                                </div> */}
+                                {isEditingProfile ? (
+                                  <div>
+                                    <div className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border border-white/20 outline-none'>
+                                      <input type="file" id='profileImage' accept='image/*' className='hidden' onChange={handleProfileImage} name='profileImage' />
+                                      <label htmlFor="profileImage" className='cursor-pointer w-full h-full flex items-center text-center justify-center'>
+                                        <span className='text-white text-xs sm:text-sm'>Upload Photo</span>
+                                      </label>
+                                    </div>
+                                  </div>
+                                ):(
+                                  <>
+                                    <img src={`${backendUrl}${profileData.profileImage}`} className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] object-cover rounded-lg' alt="" />
+                                    {/* <div className='absolute bottom-2 right-2 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
+                                      <RiImageEditLine color='white' size={18} />
+                                    </div> */}
+                                  </>
+                                )}
                               </div>
-                              <div className='pb-2'>
-                                <h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1'>{profileData.photographer.name}</h1>
-                                <p className='text-base sm:text-lg text-[#ec0a30] font-medium mb-2'>{profileData.studioName ? profileData.studioName : 'Studio name'}</p>
-                                <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-2'>
-                                  <div className='flex items-center gap-2'>
-                                    <FiMapPin size={16} className='text-[#D7D7D7]' />
-                                    <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.location ? profileData.location : 'Location'}</span>
-                                  </div>
-                                  <div className='flex items-center gap-2'>
-                                    <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
-                                    <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.experience ? profileData.experience : '0 years Experience'}</span>
-                                  </div>
+                              <div className='flex-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4'>
+                                <div className='pb-2'>
+                                  {isEditingProfile ? (
+                                    <div className='space-y-4'>
+                                      <div>
+                                        <input type="text" className='text-xl sm:text-2xl md:text-3xl font-bold bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border border-white/20 w-full max-w-md outline-none' name='name' value={editedProfile.name} onChange={handleProfileChange} placeholder='Your name' />
+                                      </div>
+                                      <div>
+                                        <input type="text" className='text-base sm:text-lg bg-white/10 text-[#ec0a30] font-medium px-3 py-2 rounded-lg border border-white/20 w-full max-w-md outline-none' name='studioName' value={editedProfile.studioName} onChange={handleProfileChange} placeholder='Studio name' />
+                                      </div>
+                                      <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-3'>
+                                        <div className='flex items-center gap-2'>
+                                          <FiMapPin size={16} className='text-[#D7D7D7]' />
+                                          <input type="text" className='bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border border-white/20 outline-none' name='location' onChange={handleProfileChange} placeholder='Location' />
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                          <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
+                                          <input type="text" className='bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border border-white/20 outline-none' name='experience' onChange={handleProfileChange} placeholder='Years of experience' />
+                                        </div>
+                                      </div>
+                                    </div>
+                                  ):(
+                                    <>
+                                      <h1 className='text-xl sm:text-2xl md:text-3xl font-bold text-white mb-1'>{profileData.photographer.name}</h1>
+                                      <p className='text-base sm:text-lg text-[#ec0a30] font-medium mb-2'>{profileData.studioName ? profileData.studioName : 'Studio name'}</p>
+                                      <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-2'>
+                                        <div className='flex items-center gap-2'>
+                                          <FiMapPin size={16} className='text-[#D7D7D7]' />
+                                          <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.location ? profileData.location : 'Location'}</span>
+                                        </div>
+                                        <div className='flex items-center gap-2'>
+                                          <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
+                                          <span className='text-[#D7D7D7] text-xs md:text-sm'>{profileData.experience ? profileData.experience : '0'} + years Experience</span>
+                                        </div>
+                                      </div>
+                                    </>
+                                  )}
                                 </div>
-                              </div>
-                              <div className='absolute bottom-2 right-2 bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
-                                <RiEdit2Fill color='white' className='block md:hidden' size={18} />
-                                <button className='text-white px-5 hidden md:block'>Edit Profile</button>
+                                {isEditingProfile ? (
+                                  <button onClick={updateProfile} className='bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
+                                    <span className='text-white px-5 inline-flex text-xs xl:text-base'>Update Profile</span>
+                                  </button>
+                                ):(
+                                  <button onClick={() => setIsEditingProfile(true)} className='bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
+                                    {/* <RiEdit2Fill color='white' className='block md:hidden' size={18} /> */}
+                                    <span className='text-white px-5 inline-flex text-xs xl:text-base'>Edit Profile</span>
+                                  </button>
+                                )}
                               </div>
                             </div>
                           </div>

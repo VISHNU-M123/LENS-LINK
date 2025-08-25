@@ -395,6 +395,52 @@ const updateCoverImage = async (req, res) => {
     }
 }
 
+const updateProfile = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const {name, studioName, location, experience} = req.body
+
+        if(!name || name.trim() === ''){
+            return res.status(400).json({success:false, message:'Name is required'})
+        }
+
+        if(!studioName || studioName.trim() === ''){
+            return res.status(400).json({success:false, message:'Studio name is required'})
+        }
+
+        if(!location || location.trim() === ''){
+            return res.status(400).json({success:false, message:'Location is required'})
+        }
+
+        if(!experience || experience.trim() === ''){
+            return res.status(400).json({success:false, message:'Experience is required'})
+        }
+
+        if(!req.file){
+            return res.status(400).json({success:false, message:'No image uploaded'})
+        }
+
+        const profileImage = `/uploads/${req.file.filename}`
+
+        const updatedPhotographer = await photographerModel.findByIdAndUpdate(photographerId, {profileImage:profileImage, name:name}, {new:true})
+
+        const updatedProfile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {studioName:studioName, location:location, experience:experience}, {new:true})
+
+        if(!updatedPhotographer || !updatedProfile){
+            return res.status(400).json({success:false, message:'Profile not found'})
+        }
+
+        res.status(200).json({success:true, profile:{profileImage:updatedPhotographer.profileImage, name:updatedPhotographer.name, studioName:updatedProfile.studioName, location:updatedProfile.location, experience:updatedProfile.experience}})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     updateAbout,
     getProfile,
@@ -408,5 +454,6 @@ export {
     updateSocialLink,
     addWhatsapp,
     updateContact,
-    updateCoverImage
+    updateCoverImage,
+    updateProfile
 }
