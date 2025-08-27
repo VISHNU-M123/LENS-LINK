@@ -21,6 +21,7 @@ import { ImBin } from "react-icons/im";
 import { FaLinkedin } from "react-icons/fa6";
 import { FaGlobe } from "react-icons/fa";
 import { IoBriefcaseOutline } from "react-icons/io5";
+import Cropper from 'react-easy-crop'
 
 const ProfileDetails = () => {
 
@@ -69,7 +70,13 @@ const ProfileDetails = () => {
     const [showMobileError, setShowMobileError] = useState('')
 
     const [isEditingProfile, setIsEditingProfile] = useState(false)
-    const [editedProfile, setEditedProfile] = useState({name:profileData.photographer.name || '', studioName:profileData.studioName || '', location:profileData.location || '', experience:profileData.experience || '', profileImage: null})
+    const [editedProfile, setEditedProfile] = useState({name:'', studioName:'', location:'', experience:'', profileImage: null})
+    const [profileErrors, setProfileErrors] = useState({name:'', studioName:'', location:'', experience:''})
+
+    const [previewImage, setPreviewImage] = useState(null)
+    const [crop, setCrop] = useState({x:0, y:0})
+    const [zoom, setZoom] = useState(1)
+    const [croppedFile, setCroppedFile] = useState(null)
 
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
@@ -489,14 +496,40 @@ const ProfileDetails = () => {
     }
 
     const handleProfileImage = (e) => {
-      setEditedProfile({
-        ...editedProfile,
-        profileImage:e.target.files[0]
-      })
+      const file = e.target.files[0]
+      if(file){
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setPreviewImage(reader.result)
+        }
+        reader.readAsDataURL(file)
+      }
     }
 
     const updateProfile = async () => {
       try {
+        let errors = {name:'', studioName:'', location:'', experience:''}
+        if(!editedProfile.name || editedProfile.name.trim() === ''){
+          errors.name = 'Name is required'
+        }
+
+        if(!editedProfile.studioName || editedProfile.studioName.trim() === ''){
+          errors.studioName = 'Studio name is required'
+        }
+
+        if(!editedProfile.location || editedProfile.location.trim() === ''){
+          errors.location = 'Location is required'
+        }
+
+        if(!editedProfile.experience || String(editedProfile.experience).trim() === ''){
+          errors.experience = 'Experience is required'
+        }
+
+        if(Object.values(errors).some(e => e !== '')){
+          setProfileErrors(errors)
+          return
+        }
+
         const formData = new FormData()
         formData.append("name", editedProfile.name);
         formData.append("studioName", editedProfile.studioName);
@@ -511,12 +544,64 @@ const ProfileDetails = () => {
         if(data.success){
           alert('profile details updated successfully')
           setProfileData(prev => ({...prev, photographer:{...prev.photographer, name:data.profile.name, profileImage:data.profile.profileImage}, studioName:data.profile.studioName, location:data.profile.location, experience:data.profile.experience}))
+          setIsEditingProfile(false)
+          setPreviewImage(null)
+          setCroppedFile(null)
+          setProfileErrors({name:'', studioName:'', location:'', experience:''})
         }else{
           alert(data.message)
         }
       } catch (error) {
         console.log(error)
       }
+    }
+
+    useEffect(() => {
+      if (profileData && profileData.photographer) {
+        setEditedProfile({
+          name: profileData.photographer.name || '',
+          studioName: profileData.studioName || '',
+          location: profileData.location || '',
+          experience: profileData.experience || '',
+          profileImage: null // Reset file input
+        })
+      }
+    }, [profileData])
+
+    const getCroppedImg = (imageSrc, crop) => {
+      return new Promise((resolve, reject) => {
+        const image = new Image()
+        image.src = imageSrc
+        image.onload = () => {
+          const canvas = document.createElement('canvas')
+          const ctx = canvas.getContext('2d')
+
+          canvas.width = crop.width
+          canvas.height = crop.height
+
+          ctx.drawImage(
+            image,
+            crop.x,
+            crop.y,
+            crop.width,
+            crop.height,
+            0,
+            0,
+            crop.width,
+            crop.height
+          )
+
+          canvas.toBlob((blob) => {
+            if(!blob){
+              reject(new Error('canvas is empty'))
+              return
+            }
+            blob.name = 'cropped.jpge'
+            resolve(blob)
+          },'image/jpge')
+        }
+        image.onerror = reject
+      })
     }
 
   return (
@@ -558,20 +643,38 @@ const ProfileDetails = () => {
                               <div className='relative'>
                                 {isEditingProfile ? (
                                   <div>
-                                    <div className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border border-white/20 outline-none'>
-                                      <input type="file" id='profileImage' accept='image/*' className='hidden' onChange={handleProfileImage} name='profileImage' />
-                                      <label htmlFor="profileImage" className='cursor-pointer w-full h-full flex items-center text-center justify-center'>
-                                        <span className='text-white text-xs sm:text-sm'>Upload Photo</span>
-                                      </label>
-                                    </div>
+                                    {!previewImage ? (
+                                      <div className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border border-white/20 outline-none'>
+                                        <input type="file" id='profileImage' accept='image/*' className='hidden' onChange={handleProfileImage} />
+                                        <label htmlFor="profileImage" className='cursor-pointer w-full h-full flex items-center justify-center'>
+                                          <span className='text-white text-xs sm:text-sm'>Upload photo</span>
+                                        </label>
+                                      </div>
+                                    ):(
+                                      <div className='relative w-40 h-40 sm:w-56 sm:h-56 md:w-64 md:h-64 bg-black rounded-lg overflow-hidden'>
+                                        <Cropper 
+                                          image={previewImage}
+                                          crop={crop}
+                                          zoom={zoom}
+                                          aspect={1}
+                                          onCropChange={setCrop}
+                                          onZoomChange={setZoom}
+                                          onCropComplete={async (_, croppedAreaPixels) => {
+                                            const croppedImg = await getCroppedImg(previewImage, croppedAreaPixels)
+                                            const file = new File([croppedImg], 'profile.jpeg', {type:'image/jpeg'})
+                                            setEditedProfile({...editedProfile, profileImage:file})
+                                            setCroppedFile(URL.createObjectURL(croppedImg))
+                                          }}
+                                        />
+                                      </div>
+                                    )}
+
+                                    {croppedFile && (
+                                      <img src={croppedFile} alt="" className='w-24 h-24 object-cover rounded-lg mt-2' />
+                                    )}
                                   </div>
                                 ):(
-                                  <>
-                                    <img src={`${backendUrl}${profileData.profileImage}`} className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] object-cover rounded-lg' alt="" />
-                                    {/* <div className='absolute bottom-2 right-2 bg-black/60 p-2 rounded-full hover:bg-black/80 transition cursor-pointer'>
-                                      <RiImageEditLine color='white' size={18} />
-                                    </div> */}
-                                  </>
+                                  <img src={`${backendUrl}${profileData.photographer.profileImage}`} className='w-24 h-24 sm:w-32 sm:h-32 lg:w-[180px] lg:h-[180px] object-cover rounded-lg' alt="" />
                                 )}
                               </div>
                               <div className='flex-1 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4'>
@@ -579,19 +682,35 @@ const ProfileDetails = () => {
                                   {isEditingProfile ? (
                                     <div className='space-y-4'>
                                       <div>
-                                        <input type="text" className='text-xl sm:text-2xl md:text-3xl font-bold bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border border-white/20 w-full max-w-md outline-none' name='name' value={editedProfile.name} onChange={handleProfileChange} placeholder='Your name' />
+                                        <input type="text" className={`text-xl sm:text-2xl md:text-3xl font-bold bg-white/10 text-white mb-2 px-3 py-2 rounded-lg border w-full max-w-md outline-none ${profileErrors.name ? 'border-red-500' : 'border-white/20'}`} name='name' value={editedProfile.name} onChange={(e) => {handleProfileChange(e); if(profileErrors.name) setProfileErrors({...profileErrors, name:''})}} placeholder='Your name' />
+                                        {profileErrors.name && (
+                                          <span className='text-red-500 text-xs mt-1 block'>{profileErrors.name}</span>
+                                        )}
                                       </div>
                                       <div>
-                                        <input type="text" className='text-base sm:text-lg bg-white/10 text-[#ec0a30] font-medium px-3 py-2 rounded-lg border border-white/20 w-full max-w-md outline-none' name='studioName' value={editedProfile.studioName} onChange={handleProfileChange} placeholder='Studio name' />
+                                        <input type="text" className={`text-base sm:text-lg bg-white/10 text-[#ec0a30] font-medium px-3 py-2 rounded-lg border w-full max-w-md outline-none ${profileErrors.studioName ? 'border-red-500' : 'border-white/20'}`} name='studioName' value={editedProfile.studioName} onChange={(e) => {handleProfileChange(e); if(profileErrors.studioName) setProfileErrors({...profileErrors, studioName:''})}} placeholder='Studio name' />
+                                        {profileErrors.studioName && (
+                                          <span className='text-red-500 text-xs mt-1 block'>{profileErrors.studioName}</span>
+                                        )}
                                       </div>
                                       <div className='flex flex-col md:flex-row flex-wrap md:items-center md:gap-4 gap-3'>
-                                        <div className='flex items-center gap-2'>
-                                          <FiMapPin size={16} className='text-[#D7D7D7]' />
-                                          <input type="text" className='bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border border-white/20 outline-none' name='location' onChange={handleProfileChange} placeholder='Location' />
+                                        <div className='flex flex-col'>
+                                          <div className='flex items-center gap-2'>
+                                            <FiMapPin size={16} className='text-[#D7D7D7]' />
+                                            <input type="text" className={`bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border outline-none ${profileErrors.location ? 'border-red-500' : 'border-white/20'}`} name='location' value={editedProfile.location} onChange={(e) => {handleProfileChange(e); if(profileErrors.location) setProfileErrors({...profileErrors, location:''})}} placeholder='Location' />
+                                          </div>
+                                          {profileErrors.location && (
+                                            <span className='text-red-500 text-xs mt-1 block ml-6'>{profileErrors.location}</span>
+                                          )}
                                         </div>
-                                        <div className='flex items-center gap-2'>
-                                          <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
-                                          <input type="text" className='bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border border-white/20 outline-none' name='experience' onChange={handleProfileChange} placeholder='Years of experience' />
+                                        <div className='flex flex-col'>
+                                          <div className='flex items-center gap-2'>
+                                            <IoBriefcaseOutline size={16} className='text-[#D7D7D7]' />
+                                            <input type="text" className={`bg-white/10 text-[#D7D7D7] text-xs md:text-sm px-2 py-1 rounded border outline-none ${profileErrors.experience ? 'border-red-500' : 'border-white/20'}`} name='experience' value={editedProfile.experience} onChange={(e) => {handleProfileChange(e); if(profileErrors.experience) setProfileErrors({...profileErrors, experience:''})}} placeholder='Years of experience' />
+                                          </div>
+                                          {profileErrors.experience && (
+                                            <span className='text-red-500 text-xs mt-1 block ml-6'>{profileErrors.experience}</span>
+                                          )}
                                         </div>
                                       </div>
                                     </div>
@@ -613,12 +732,12 @@ const ProfileDetails = () => {
                                   )}
                                 </div>
                                 {isEditingProfile ? (
-                                  <button onClick={updateProfile} className='bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
-                                    <span className='text-white px-5 inline-flex text-xs xl:text-base'>Update Profile</span>
-                                  </button>
+                                  <div className='flex gap-2'>
+                                    <button onClick={updateProfile} className='bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition text-xs xl:text-base'>Update Profile</button>
+                                    <button onClick={() => {setIsEditingProfile(false); setPreviewImage(null); setCroppedFile(null); setEditedProfile({name:profileData.photographer.name || '', studioName:profileData.studioName || '', location:profileData.location || '', experience:profileData.experience || '', profileImage:null}); setProfileErrors({})}} className='bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition text-xs xl:text-base'>Cancel</button>
+                                  </div>
                                 ):(
                                   <button onClick={() => setIsEditingProfile(true)} className='bg-black/60 p-2 md:px-5 rounded-full hover:bg-black/80 transition cursor-pointer'>
-                                    {/* <RiEdit2Fill color='white' className='block md:hidden' size={18} /> */}
                                     <span className='text-white px-5 inline-flex text-xs xl:text-base'>Edit Profile</span>
                                   </button>
                                 )}
@@ -657,7 +776,6 @@ const ProfileDetails = () => {
                               {profileData.about ? (
                                 <div>
                                   <p className="text-[#D7D7D7] text-[14px]">{profileData.about}</p>
-                                  {/* <p className="text-[#D7D7D7] text-[14px]">Passionate photographer specializing in capturing life\'s most precious moments. With over 8 years of experience, I blend artistic vision with technical expertise to create timeless memories that tell your unique story.</p> */}
                                 </div>
                               ):(
                                 <div className='text-center py-8 text-[#D7D7D7]'>

@@ -51,7 +51,7 @@ const getProfile = async (req, res) => {
             return res.status(400).json({success:false, message:'Photographer not found'})
         }
 
-        const profile = await photographerProfileModel.findOne({photographer:photographerId}).populate('photographer', 'name email mobile')
+        const profile = await photographerProfileModel.findOne({photographer:photographerId}).populate('photographer', 'name email mobile profileImage')
 
         if(!profile){
             return res.status(400).json({success:false, message:'Profile not found'})
@@ -421,13 +421,12 @@ const updateProfile = async (req, res) => {
             return res.status(400).json({success:false, message:'Experience is required'})
         }
 
-        if(!req.file){
-            return res.status(400).json({success:false, message:'No image uploaded'})
+        let updatePhotographerData = {name:name}
+        if(req.file){
+            updatePhotographerData.profileImage = `/uploads/${req.file.filename}`
         }
 
-        const profileImage = `/uploads/${req.file.filename}`
-
-        const updatedPhotographer = await photographerModel.findByIdAndUpdate(photographerId, {profileImage:profileImage, name:name}, {new:true})
+        const updatedPhotographer = await photographerModel.findByIdAndUpdate(photographerId, updatePhotographerData, {new:true})
 
         const updatedProfile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {studioName:studioName, location:location, experience:experience}, {new:true})
 
