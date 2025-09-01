@@ -7,6 +7,7 @@ import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { addCategory } from '../controllers/categoryController.js'
+import { addSubCategory } from '../controllers/subCategoryController.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -58,5 +59,6 @@ photographerRouter.post('/updateCoverImage', photographerMiddleware, upload.sing
 photographerRouter.post('/updateProfile', photographerMiddleware, upload.single('profileImage'), updateProfile)
 
 photographerRouter.post('/add-category', photographerMiddleware, addCategory)
+photographerRouter.post('/add-subCategory', photographerMiddleware, addSubCategory)
 
 export default photographerRouter

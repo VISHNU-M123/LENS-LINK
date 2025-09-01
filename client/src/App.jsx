@@ -15,6 +15,7 @@ import Service from './pages/Photographer/Service'
 import AddService from './pages/Photographer/AddService'
 import EditService from './pages/Photographer/EditService'
 import ProfileDetails from './pages/Photographer/ProfileDetails'
+import AddCategorySubcategory from './pages/Photographer/AddCategorySubcategory'
 
 const App = () => {
   return (
@@ -37,6 +38,7 @@ const App = () => {
         <Route path='/add-service' element={<AddService/>}/>
         <Route path='/edit-service' element={<EditService/>}/>
         <Route path='/profile-details' element={<ProfileDetails/>}/>
+        <Route path='/add-category' element={<AddCategorySubcategory/>}/>
       </Routes>
     </div>
   )
