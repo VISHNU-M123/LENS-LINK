@@ -1,5 +1,5 @@
-import categoryModel from "../models/categoryModel"
-import subCategoryModel from "../models/subCategoryModel"
+import categoryModel from "../models/categoryModel.js"
+import subCategoryModel from "../models/subCategoryModel.js"
 
 const addSubCategory = async (req, res) => {
     try {
