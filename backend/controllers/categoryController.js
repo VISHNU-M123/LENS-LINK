@@ -43,6 +43,23 @@ const addCategory = async (req, res) => {
     }
 }
 
+const loadAllCategory = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const categories = await categoryModel.find({photographer:photographerId})
+
+        res.status(200).json({success:true, categories})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
-    addCategory
+    addCategory,
+    loadAllCategory
 }
