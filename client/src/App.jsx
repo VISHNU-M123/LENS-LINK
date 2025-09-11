@@ -17,6 +17,7 @@ import EditService from './pages/Photographer/EditService'
 import ProfileDetails from './pages/Photographer/ProfileDetails'
 import AddCategorySubcategory from './pages/Photographer/AddCategorySubcategory'
 import AllCategory from './pages/Photographer/AllCategory'
+import AllSubCategory from './pages/Photographer/AllSubCategory'
 
 const App = () => {
   return (
@@ -41,6 +42,7 @@ const App = () => {
         <Route path='/profile-details' element={<ProfileDetails/>}/>
         <Route path='/add-category' element={<AddCategorySubcategory/>}/>
         <Route path='/all-category' element={<AllCategory/>}/>
+        <Route path='/loadAllSubCategory/:categoryId' element={<AllSubCategory/>}/>
       </Routes>
     </div>
   )

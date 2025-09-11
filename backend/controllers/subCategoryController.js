@@ -55,6 +55,32 @@ const addSubCategory = async (req, res) => {
     }
 }
 
+const loadAllSubCategory = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {categoryId} = req.params
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        if(!categoryId){
+            return res.status(400).json({success:false, message:'Category not found'})
+        }
+
+        const subCategories = await subCategoryModel.find({categoryId:categoryId, photographer:photographerId})
+
+        if(subCategories.length === 0){
+            return res.status(400).json({success:false, message:'No subcategories found for this category'})
+        }
+
+        res.status(200).json({success:true, subCategories})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
-    addSubCategory
+    addSubCategory,
+    loadAllSubCategory
 }
