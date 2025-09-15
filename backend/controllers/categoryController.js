@@ -59,7 +59,54 @@ const loadAllCategory = async (req, res) => {
     }
 }
 
+const toggleCategoryStatus = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {categoryId} = req.body
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const category = await categoryModel.findOne({_id:categoryId, photographer:photographerId})
+
+        if(!category){
+            return res.status(400).json({success:false, message:'Category not found'})
+        }
+
+        category.categoryStatus = category.categoryStatus === 'Active' ? 'Blocked' : 'Active'
+        await category.save()
+
+        res.status(200).json({success:true, message:'Category status updated successfully', updatedStatus:category.categoryStatus, category})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
+const loadEditCategory = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {categoryId} = req.params
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const category = await categoryModel.findOne({_id:categoryId, photographer:photographerId})
+
+        if(!category){
+            return res.status(400).json({success:false, message:'Category not found'})
+        }
+
+        res.status(200).json({success:true, category})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addCategory,
-    loadAllCategory
+    loadAllCategory,
+    toggleCategoryStatus,
+    loadEditCategory
 }

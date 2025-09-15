@@ -6,8 +6,8 @@ import { addAchievement, addEquipment, addSocialLink, addSpecialization, addWhat
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { addCategory, loadAllCategory } from '../controllers/categoryController.js'
-import { addSubCategory, loadAllSubCategory } from '../controllers/subCategoryController.js'
+import { addCategory, loadAllCategory, loadEditCategory, toggleCategoryStatus } from '../controllers/categoryController.js'
+import { addSubCategory, loadAllSubCategory, toggleSubCategoryStatus } from '../controllers/subCategoryController.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -62,5 +62,8 @@ photographerRouter.post('/add-category', photographerMiddleware, addCategory)
 photographerRouter.post('/add-subCategory', photographerMiddleware, addSubCategory)
 photographerRouter.get('/loadAllCategory', photographerMiddleware, loadAllCategory)
 photographerRouter.get('/loadAllSubCategory/:categoryId', photographerMiddleware, loadAllSubCategory)
+photographerRouter.post('/toggleCategoryStatus', photographerMiddleware, toggleCategoryStatus)
+photographerRouter.post('/toggleSubCategoryStatus', photographerMiddleware, toggleSubCategoryStatus)
+photographerRouter.get('/getEditCategory/:categoryId', photographerMiddleware, loadEditCategory)
 
 export default photographerRouter

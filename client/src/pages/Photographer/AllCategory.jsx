@@ -21,6 +21,17 @@ const AllCategory = () => {
 
     const navigate = useNavigate()
 
+    const handleToggleCategoryStatus = async (categoryId) => {
+        try {
+            const {data} = await axios.post(`${backendUrl}/api/photographer/toggleCategoryStatus`, {categoryId}, {headers:{photographerToken}})
+            if(data.success){
+                setCategories((prevCategories) => prevCategories.map((category) => category._id === categoryId ? {...category, categoryStatus:data.updatedStatus} : category))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         const fetchAllCategories = async () => {
             try {
@@ -67,7 +78,7 @@ const AllCategory = () => {
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33] truncate overflow-hidden text-ellipsis max-w-[180px]">{category.categoryName}</td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33] truncate overflow-hidden text-ellipsis max-w-[200px]">{category.categoryDescription}</td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33]">
-                                                            <button className={`border hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer ${category.categoryStatus === 'Active' ? 'border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b]' : 'border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a]'}`}>{category.categoryStatus}</button>
+                                                            <button onClick={() => handleToggleCategoryStatus(category._id)} className={`border hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer ${category.categoryStatus === 'Active' ? 'border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b]' : 'border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a]'}`}>{category.categoryStatus}</button>
                                                         </td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33]">
                                                             <button onClick={() => navigate(`/loadAllSubCategory/${category._id}`)} className="border border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b] hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer">Info</button>

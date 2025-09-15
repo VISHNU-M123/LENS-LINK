@@ -18,6 +18,7 @@ import ProfileDetails from './pages/Photographer/ProfileDetails'
 import AddCategorySubcategory from './pages/Photographer/AddCategorySubcategory'
 import AllCategory from './pages/Photographer/AllCategory'
 import AllSubCategory from './pages/Photographer/AllSubCategory'
+import EditCategorySubcategory from './pages/Photographer/EditCategorySubcategory'
 
 const App = () => {
   return (
@@ -43,6 +44,7 @@ const App = () => {
         <Route path='/add-category' element={<AddCategorySubcategory/>}/>
         <Route path='/all-category' element={<AllCategory/>}/>
         <Route path='/loadAllSubCategory/:categoryId' element={<AllSubCategory/>}/>
+        <Route path='/edit-category/:categoryId' element={<EditCategorySubcategory/>}/>
       </Routes>
     </div>
   )

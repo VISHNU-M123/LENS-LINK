@@ -80,7 +80,32 @@ const loadAllSubCategory = async (req, res) => {
     }
 }
 
+const toggleSubCategoryStatus = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {subCategoryId} = req.body
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const subCategory = await subCategoryModel.findOne({_id:subCategoryId, photographer:photographerId})
+
+        if(!subCategory){
+            return res.status(400).json({success:false, message:'SubCategory not found'})
+        }
+
+        subCategory.subCategoryStatus = subCategory.subCategoryStatus === 'Active' ? 'Blocked' : 'Active'
+        await subCategory.save()
+
+        res.status(200).json({success:true, message:'SubCategory status updated successfully', updatedStatus:subCategory.subCategoryStatus, subCategory})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addSubCategory,
-    loadAllSubCategory
+    loadAllSubCategory,
+    toggleSubCategoryStatus
 }

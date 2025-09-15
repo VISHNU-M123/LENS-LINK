@@ -19,6 +19,17 @@ const AllSubCategory = () => {
         setShowSidebarItems(prev => !prev)
     }
 
+    const handleToggleSubCategoryStatus = async (subCategoryId) => {
+        try {
+            const {data} = await axios.post(`${backendUrl}/api/photographer/toggleSubCategoryStatus`, {subCategoryId}, {headers:{photographerToken}})
+            if(data.success){
+                setSubCategories((prev) => prev.map((sub) => sub._id === subCategoryId ? {...sub, subCategoryStatus:data.updatedStatus} : sub))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
         const fetchSubCategories = async () => {
             try {
@@ -64,7 +75,7 @@ const AllSubCategory = () => {
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33] truncate overflow-hidden text-ellipsis max-w-[180px]">{subCategory.subCategoryName}</td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33] truncate overflow-hidden text-ellipsis max-w-[200px]">{subCategory.subCategoryDescription}</td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33]">
-                                                            <button className={`border hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer ${subCategory.subCategoryStatus === 'Active' ? 'border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b]' : 'border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a]'}`}>{subCategory.subCategoryStatus}</button>
+                                                            <button onClick={() => handleToggleSubCategoryStatus(subCategory._id)} className={`border hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer ${subCategory.subCategoryStatus === 'Active' ? 'border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b]' : 'border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a]'}`}>{subCategory.subCategoryStatus}</button>
                                                         </td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33]">
                                                             <a href="" className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white mr-3'>
