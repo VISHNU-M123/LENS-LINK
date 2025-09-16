@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useEffect } from 'react'
 
 const CategorySubcategoryForm = ({heading, subHeadingCategory, subHeadingSubCategory, mode='add', initialData={}, onCategorySubmit, onSubCategorySubmit, categories, fieldErrors, categoryErrorMsg, subCategoryErrorMsg, clearCategoryErrorMsg, clearSubCategoryErrorMsg, clearFieldError}) => {
 
@@ -54,6 +55,12 @@ const CategorySubcategoryForm = ({heading, subHeadingCategory, subHeadingSubCate
         e.preventDefault()
         onSubCategorySubmit(subCategoryData, resetSubCategoryForm)
     }
+
+    useEffect(() => {
+        if(initialData && mode === 'edit'){
+            setCategoryData({categoryName:initialData.categoryName, categoryDescription:initialData.categoryDescription, categoryStatus:initialData.categoryStatus})
+        }
+    },[initialData, mode])
   return (
     <div>
         <div className='mb-[24px] flex items-center'>

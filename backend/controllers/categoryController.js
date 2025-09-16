@@ -104,9 +104,55 @@ const loadEditCategory = async (req, res) => {
     }
 }
 
+const updateCategory = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {categoryId} = req.params
+        const {categoryName, categoryDescription, categoryStatus} = req.body
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const category = await categoryModel.findOne({_id:categoryId, photographer:photographerId})
+
+        if(!category){
+            return res.status(400).json({success:false, message:'Category not found'})
+        }
+
+        if(!categoryName || categoryName.trim() === ''){
+            return res.status(400).json({success:false, message:'Category Name is required'})
+        }
+
+        if(!categoryDescription || categoryDescription.trim() === ''){
+            return res.status(400).json({success:false, message:'Category description is required'})
+        }
+
+        if(!['Active', 'Blocked'].includes(categoryStatus)){
+            return res.status(400).json({success:false, message:'Invalid Status'})
+        }
+
+        const existingCategory = await categoryModel.findOne({categoryName:categoryName, photographer:photographerId})
+
+        if(existingCategory && existingCategory._id.toString() !== categoryId){
+            return res.status(400).json({success:false, message:'Category already exists for this photographer'})
+        }
+
+        category.categoryName = categoryName
+        category.categoryDescription = categoryDescription
+        category.categoryStatus = categoryStatus
+
+        await category.save()
+        res.status(200).json({success:true, message:'Category updated successfully', category})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addCategory,
     loadAllCategory,
     toggleCategoryStatus,
-    loadEditCategory
+    loadEditCategory,
+    updateCategory
 }
