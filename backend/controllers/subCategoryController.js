@@ -125,9 +125,66 @@ const loadEditSubCategory = async (req, res) => {
     }
 }
 
+const updateSubCategory = async (req, res) => {
+    try {
+        const photographerId = req.photographerId
+        const {subCategoryId} = req.params
+        const {subCategoryName, subCategoryDescription, subCategoryStatus, mainCategoryId} = req.body
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const subCategory = await subCategoryModel.findOne({_id:subCategoryId, photographer:photographerId})
+
+        if(!subCategory){
+            return res.status(400).json({success:false, message:'Subcategory not found'})
+        }
+
+        if(!subCategoryName || subCategoryName.trim() === ''){
+            return res.status(400).json({success:false, message:'Subcategory name is required'})
+        }
+
+        if(!subCategoryDescription || subCategoryDescription.trim() === ''){
+            return res.status(400).json({success:false, message:'Subcategory description is required'})
+        }
+
+        if(!['Active', 'Blocked'].includes(subCategoryStatus)){
+            return res.status(400).json({success:false, message:'Invalid status'})
+        }
+
+        if(!mainCategoryId){
+            return res.status(400).json({success:false, message:'Please select a main category'})
+        }
+
+        const mainCategory = await categoryModel.findById(mainCategoryId)
+
+        if(!mainCategory){
+            return res.status(400).json({success:false, message:'Main category not found'})
+        }
+
+        const existingSubCategory = await subCategoryModel.findOne({subCategoryName:subCategoryName, categoryId:mainCategoryId, photographer:photographerId})
+
+        if(existingSubCategory && existingSubCategory._id.toString() !== subCategoryId){
+            return res.status(400).json({success:false, message:'Subcategory already exists'})
+        }
+
+        subCategory.subCategoryName = subCategoryName
+        subCategory.subCategoryDescription = subCategoryDescription
+        subCategory.subCategoryStatus = subCategoryStatus
+        subCategory.categoryId = mainCategoryId
+
+        await subCategory.save()
+        res.status(200).json({success:true, message:'Subcategory updated successfully', subCategory})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addSubCategory,
     loadAllSubCategory,
     toggleSubCategoryStatus,
-    loadEditSubCategory
+    loadEditSubCategory,
+    updateSubCategory
 }

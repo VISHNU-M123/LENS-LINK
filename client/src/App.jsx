@@ -42,9 +42,11 @@ const App = () => {
         <Route path='/edit-service' element={<EditService/>}/>
         <Route path='/profile-details' element={<ProfileDetails/>}/>
         <Route path='/add-category' element={<AddCategorySubcategory/>}/>
+        <Route path='/add-subCategory' element={<AddCategorySubcategory/>}/>
         <Route path='/all-category' element={<AllCategory/>}/>
         <Route path='/loadAllSubCategory/:categoryId' element={<AllSubCategory/>}/>
         <Route path='/edit-category/:categoryId' element={<EditCategorySubcategory/>}/>
+        <Route path='/edit-subCategory/:subCategoryId' element={<EditCategorySubcategory/>}/>
       </Routes>
     </div>
   )

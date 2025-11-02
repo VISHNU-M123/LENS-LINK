@@ -7,7 +7,7 @@ import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { addCategory, loadAllCategory, loadEditCategory, toggleCategoryStatus, updateCategory } from '../controllers/categoryController.js'
-import { addSubCategory, loadAllSubCategory, loadEditSubCategory, toggleSubCategoryStatus } from '../controllers/subCategoryController.js'
+import { addSubCategory, loadAllSubCategory, loadEditSubCategory, toggleSubCategoryStatus, updateSubCategory } from '../controllers/subCategoryController.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -67,5 +67,6 @@ photographerRouter.post('/toggleSubCategoryStatus', photographerMiddleware, togg
 photographerRouter.get('/getEditCategory/:categoryId', photographerMiddleware, loadEditCategory)
 photographerRouter.post('/update-category/:categoryId', photographerMiddleware, updateCategory)
 photographerRouter.get('/getEditSubCategory/:subCategoryId', photographerMiddleware, loadEditSubCategory)
+photographerRouter.post('/update-subCategory/:subCategoryId', photographerMiddleware, updateSubCategory)
 
 export default photographerRouter

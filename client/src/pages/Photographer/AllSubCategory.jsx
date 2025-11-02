@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import Sidebar from '../../components/Photographer/Sidebar'
 import Navbar from '../../components/Photographer/Navbar'
 import { PhotographerContext } from '../../context/PhotographerContext'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { FaPencilAlt } from 'react-icons/fa'
 import { ImBin } from 'react-icons/im'
@@ -18,6 +18,8 @@ const AllSubCategory = () => {
     const toggleSidebarItems = () => {
         setShowSidebarItems(prev => !prev)
     }
+
+    const navigate = useNavigate()
 
     const handleToggleSubCategoryStatus = async (subCategoryId) => {
         try {
@@ -78,7 +80,7 @@ const AllSubCategory = () => {
                                                             <button onClick={() => handleToggleSubCategoryStatus(subCategory._id)} className={`border hover:text-white py-[8px] px-[11px] rounded-[4px] text-[12px] leading-none font-[500] text-center inline-block cursor-pointer ${subCategory.subCategoryStatus === 'Active' ? 'border-[#00d25b] text-[#00d25b] hover:bg-[#00d25b]' : 'border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a]'}`}>{subCategory.subCategoryStatus}</button>
                                                         </td>
                                                         <td className="p-[15px] text-[14px] align-middle leading-none whitespace-nowrap text-white border-b border-b-[#2c2e33]">
-                                                            <a href="" className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white mr-3'>
+                                                            <a href="" onClick={() => navigate(`/edit-subCategory/${subCategory._id}`)} className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white mr-3'>
                                                                 <FaPencilAlt size={14} />
                                                             </a>
                                                             <button className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a] hover:text-white cursor-pointer'>
@@ -93,6 +95,9 @@ const AllSubCategory = () => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div className='justify-center flex items-center'>
+                        <button onClick={() => navigate('/add-subCategory')} className='text-white text-center bg-green-500 px-5 py-2 cursor-pointer rounded-sm'>Add new Subcategory</button>
                     </div>
                 </div>
             </div>
