@@ -7,6 +7,7 @@ import { ImBin } from 'react-icons/im'
 import axios from 'axios'
 import { PhotographerContext } from '../../context/PhotographerContext'
 import { useNavigate } from 'react-router-dom'
+import DeleteConfirm from '../../components/Photographer/DeleteConfirm'
 
 const AllCategory = () => {
 
@@ -26,6 +27,20 @@ const AllCategory = () => {
             const {data} = await axios.post(`${backendUrl}/api/photographer/toggleCategoryStatus`, {categoryId}, {headers:{photographerToken}})
             if(data.success){
                 setCategories((prevCategories) => prevCategories.map((category) => category._id === categoryId ? {...category, categoryStatus:data.updatedStatus} : category))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteCategory = async (categoryId, categoryName) => {
+        try {
+            const confirmed = await DeleteConfirm(`Delete Category ${categoryName} ?`)
+            if(!confirmed) return
+
+            const {data} = await axios.post(`${backendUrl}/api/photographer/delete-category`, {categoryId}, {headers:{photographerToken}})
+            if(data.success){
+                setCategories(prev => prev.filter(category => category._id !== categoryId))
             }
         } catch (error) {
             console.log(error)
@@ -87,7 +102,7 @@ const AllCategory = () => {
                                                             <a href="" onClick={() => navigate(`/edit-category/${category._id}`)} className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white mr-3'>
                                                                 <FaPencilAlt size={14} />
                                                             </a>
-                                                            <button className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a] hover:text-white cursor-pointer'>
+                                                            <button onClick={() => handleDeleteCategory(category._id, category.categoryName)} className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a] hover:text-white cursor-pointer'>
                                                                 <ImBin/>
                                                             </button>
                                                         </td>

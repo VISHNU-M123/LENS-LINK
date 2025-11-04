@@ -6,6 +6,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { FaPencilAlt } from 'react-icons/fa'
 import { ImBin } from 'react-icons/im'
+import DeleteConfirm from '../../components/Photographer/DeleteConfirm'
 
 const AllSubCategory = () => {
 
@@ -26,6 +27,20 @@ const AllSubCategory = () => {
             const {data} = await axios.post(`${backendUrl}/api/photographer/toggleSubCategoryStatus`, {subCategoryId}, {headers:{photographerToken}})
             if(data.success){
                 setSubCategories((prev) => prev.map((sub) => sub._id === subCategoryId ? {...sub, subCategoryStatus:data.updatedStatus} : sub))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleDeleteSubCategory = async (subCategoryId, subCategoryName) => {
+        try {
+            const confirmed = await DeleteConfirm(`Delete Subcategory ${subCategoryName} ?`)
+            if(!confirmed) return
+
+            const {data} = await axios.post(`${backendUrl}/api/photographer/delete-subCategory`, {subCategoryId}, {headers:{photographerToken}})
+            if(data.success){
+                setSubCategories(prev => prev.filter(subCategory => subCategory._id !== subCategoryId))
             }
         } catch (error) {
             console.log(error)
@@ -83,7 +98,7 @@ const AllSubCategory = () => {
                                                             <a href="" onClick={() => navigate(`/edit-subCategory/${subCategory._id}`)} className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#3b82f6] text-[#3b82f6] hover:bg-[#3b82f6] hover:text-white mr-3'>
                                                                 <FaPencilAlt size={14} />
                                                             </a>
-                                                            <button className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a] hover:text-white cursor-pointer'>
+                                                            <button onClick={() => handleDeleteSubCategory(subCategory._id, subCategory.subCategoryName)} className='inline-flex items-center justify-center w-8 h-8 rounded-[4px] border border-[#fc424a] text-[#fc424a] hover:bg-[#fc424a] hover:text-white cursor-pointer'>
                                                                 <ImBin/>
                                                             </button>
                                                         </td>

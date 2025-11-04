@@ -149,10 +149,31 @@ const updateCategory = async (req, res) => {
     }
 }
 
+const deleteCategory = async (req, res) => {
+    try {
+        const {categoryId} = req.body
+        const photographerId = req.photographerId
+
+        const category = await categoryModel.findOneAndDelete({
+            _id:categoryId,
+            photographer:photographerId
+        })
+
+        if(!category){
+            return res.status(400).json({success:false, message:'Category not found or unauthorized'})
+        }
+
+        return res.status(200).json({success:true, message:'Category deleted successfully'})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addCategory,
     loadAllCategory,
     toggleCategoryStatus,
     loadEditCategory,
-    updateCategory
+    updateCategory,
+    deleteCategory
 }

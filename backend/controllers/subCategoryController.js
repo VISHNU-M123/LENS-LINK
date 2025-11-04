@@ -181,10 +181,31 @@ const updateSubCategory = async (req, res) => {
     }
 }
 
+const deleteSubCategory = async (req, res) => {
+    try {
+        const {subCategoryId} = req.body
+        const photographerId = req.photographerId
+
+        const subCategory = await subCategoryModel.findOneAndDelete({
+            _id:subCategoryId,
+            photographer:photographerId
+        })
+
+        if(!subCategory){
+            return res.status(400).json({success:false, message:'Subcategory not found or unauthorized'})
+        }
+
+        return res.status(200).json({success:true, message:'Subcategory deleted successfully'})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     addSubCategory,
     loadAllSubCategory,
     toggleSubCategoryStatus,
     loadEditSubCategory,
-    updateSubCategory
+    updateSubCategory,
+    deleteSubCategory
 }
