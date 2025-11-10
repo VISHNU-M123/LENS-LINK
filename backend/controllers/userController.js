@@ -5,6 +5,7 @@ import otpModel from '../models/otpModel.js';
 import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
 import photographerModel from '../models/photographerModel.js';
+import photographerProfileModel from '../models/photographerProfileModel.js';
 
 const registerUser = async (req, res) => {
     try {
@@ -212,10 +213,20 @@ const verifyLogin = async (req, res) => {
 
 const loadAllPhotographer = async (req, res) => {
     try {
-        const photographers = await photographerModel.find({is_blocked: 'Active'})
-        if(!photographers){
-            return res.status(400).json({success:false, message:'No active photograpehrs'})
+        const activePhotographerIds = await photographerModel.find({is_blocked:'Active'}).select('_id').lean()
+
+        if(!activePhotographerIds.length){
+            return res.status(400).json({success:false, message:'No active photographers found'})
         }
+
+        const photographerIds = activePhotographerIds.map(p => p._id)
+
+        const photographers = await photographerProfileModel.find({photographer:{$in:photographerIds}}).populate({path:'photographer', select:'name email mobile profileImage is_available'}).sort({createdAt:-1}).lean()
+
+        if(!photographers.length){
+            return res.status(400).json({success:false, message:'No photographers profile found'})
+        }
+        
         res.status(200).json({success:true, photographers})
     } catch (error) {
         res.status(500).json({success:false, message:error.message})
@@ -237,11 +248,32 @@ const getUserProfile = async (req, res) => {
     }
 }
 
+const loadSinglePhotographer = async (req, res) => {
+    try {
+        const {photographerId} = req.params
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const photographer = await photographerProfileModel.findOne({photographer:photographerId}).populate({path:'photographer', select:'name email mobile profileImage is_available'})
+
+        if(!photographer){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        res.status(200).json({success:true, photographer})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerUser,
     verifyOtp,
     resendOtp,
     verifyLogin,
     loadAllPhotographer,
-    getUserProfile
+    getUserProfile,
+    loadSinglePhotographer
 }

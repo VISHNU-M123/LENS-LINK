@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Navbar from '../../components/User/Navbar'
 import { FiShare2 } from "react-icons/fi";
 import { FaRegHeart } from "react-icons/fa";
@@ -9,10 +9,13 @@ import { FiMessageCircle } from "react-icons/fi";
 import { LuPhone } from "react-icons/lu";
 import { FiCheckCircle } from "react-icons/fi";
 import { CiMail } from "react-icons/ci";
+import { FaWhatsapp } from "react-icons/fa6";
 import { CiGlobe } from "react-icons/ci";
 import { FaInstagram } from "react-icons/fa";
 import { FiFacebook } from "react-icons/fi";
 import { FiTwitter } from "react-icons/fi";
+import { FaLinkedin } from "react-icons/fa6";
+import { FaGlobe } from "react-icons/fa";
 import { FiAward } from "react-icons/fi";
 import { FaArrowRight } from "react-icons/fa6";
 import { FiPlayCircle } from "react-icons/fi";
@@ -22,6 +25,9 @@ import coverImage from '../../assets/IndianWedding-Landing.jpg'
 import reviewAvatar from '../../assets/insta-3.jpg'
 import weddingImg1 from '../../assets/weddingImg.jpg'
 import { FaChevronDown } from "react-icons/fa6";
+import { useParams } from 'react-router-dom';
+import { AppContext } from '../../context/AppContext';
+import axios from 'axios';
 
 const PhotographerProfilePage = () => {
 
@@ -35,12 +41,32 @@ const PhotographerProfilePage = () => {
         { id: 'services', label: 'Services', icon: Award },
         { id: 'reviews', label: 'Reviews', icon: Star }
     ];
+
+    const {backendUrl} = useContext(AppContext)
+    const {photographerId} = useParams()
+
+    const [photographer, setPhotographer] = useState(null)
+
+    useEffect(() =>{
+        const fetchPhotographerProfile = async () => {
+            try {
+                const {data} = await axios.get(`${backendUrl}/api/user/loadSinglePhotographer/${photographerId}`)
+                if(data.success){
+                    setPhotographer(data.photographer)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchPhotographerProfile()
+    },[photographerId])
   return (
     <div className='w-full overflow-x-hidden bg-black'>
       <Navbar/>
       <div className='min-h-screen bg-black'>
         <div className='relative h-80 bg-black overflow-hidden'>
-            <img src={coverImage} className='w-full h-full object-cover opacity-60' alt="" />
+            <img src={`${backendUrl}${photographer?.coverImage}`} className='w-full h-full object-cover opacity-60' alt="" />
             <div className='absolute inset-0 bg-gradient-to-t from-black/50 to-transparent'></div>
 
             <div className='absolute top-6 right-6 flex gap-3'>
@@ -57,13 +83,13 @@ const PhotographerProfilePage = () => {
             <div className='bg-[#181818] rounded-2xl shadow-xl p-8'>
                 <div className='flex flex-col lg:flex-row gap-8'>
                     <div className='flex flex-col items-center lg:items-start'>
-                        <img src="" className='w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-lg' alt="" />
+                        <img src={`${backendUrl}${photographer?.photographer?.profileImage}`} className='w-32 h-32 rounded-2xl object-cover border-4 border-white shadow-lg' alt="" />
                         <div className='mt-4 text-center lg:text-left'>
-                            <h1 className='text-3xl font-bold text-white'>Photographer name</h1>
-                            <p className='text-lg text-[#ec0a30] font-medium'>Studio name</p>
+                            <h1 className='text-3xl font-bold text-white'>{photographer?.photographer?.name}</h1>
+                            <p className='text-lg text-[#ec0a30] font-medium'>{photographer?.studioName}</p>
                             <div className='flex items-center justify-center lg:justify-start gap-2 mt-2'>
                                 <FiMapPin size={16} className='text-[#D7D7D7]' />
-                                <span className='text-[#D7D7D7]'>Location</span>
+                                <span className='text-[#D7D7D7]'>{photographer?.location}</span>
                             </div>
                         </div>
                     </div>
@@ -82,7 +108,7 @@ const PhotographerProfilePage = () => {
                                 <p className='text-[#D7D7D7] text-sm'>Photos delivered</p>
                             </div>
                             <div className='text-center'>
-                                <div className='text-2xl font-bold text-white mb-1'>8+ Years</div>
+                                <div className='text-2xl font-bold text-white mb-1'>{photographer?.experience}+ Years</div>
                                 <p className='text-[#D7D7D7] text-sm'>Experience</p>
                             </div>
                             <div className='text-center'>
@@ -134,37 +160,34 @@ const PhotographerProfilePage = () => {
                     <div className='lg:col-span-2 space-y-8'>
                         <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                             <h3 className='text-xl font-bold text-white mb-4'>About Me</h3>
-                            <p className='text-[#D7D7D7] leading-relaxed'>Passionate photographer specializing in capturing life\'s most precious moments. With over 8 years of experience, I blend artistic vision with technical expertise to create timeless memories that tell your unique story.</p>
+                            <p className='text-[#D7D7D7] leading-relaxed'>{photographer?.about}</p>
                         </div>
                         <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                             <h3 className='text-xl font-bold text-white mb-4'>Specializations</h3>
-                            <div className='flex flex-wrap gap-3'>
-                                <span className='bg-[#ec0a30] text-white px-4 py-2 rounded-full font-medium'>Wedding Photography</span>
-                                <span className='bg-[#ec0a30] text-white px-4 py-2 rounded-full font-medium'>Portrait Sessions</span>
-                                <span className='bg-[#ec0a30] text-white px-4 py-2 rounded-full font-medium'>Event Photography</span>
-                                <span className='bg-[#ec0a30] text-white px-4 py-2 rounded-full font-medium'>Commercial Shoots</span>
-                            </div>
+                            {photographer?.specializations?.length > 0 ? (
+                                <div className='flex flex-wrap gap-3'>
+                                    {photographer.specializations.map((item, index) => (
+                                        <span key={index} className='bg-[#ec0a30] text-white px-4 py-2 rounded-full font-medium'>{item}</span>
+                                    ))}
+                                </div>
+                            ) : (
+                                <p className='text-[#D7D7D7]'>No specializations provided</p>
+                            )}
                         </div>
                         <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                             <h3 className='text-xl font-bold text-white mb-4'>Professional equipments</h3>
-                            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
-                                <div className='flex items-center gap-3'>
-                                    <FiCheckCircle size={16} className='text-green-500' />
-                                    <span className='text-[#D7D7D7]'>Canon EOS R5</span>
+                            {photographer?.equipment?.length > 0 ? (
+                                <div className='grid grid-cols-1 sm:grid-cols-2 gap-3'>
+                                    {photographer.equipment.map((item, index) => (
+                                        <div key={index} className='flex items-center gap-3'>
+                                            <FiCheckCircle size={16} className='text-green-500' />
+                                            <span className='text-[#D7D7D7]'>{item}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className='flex items-center gap-3'>
-                                    <FiCheckCircle size={16} className='text-green-500' />
-                                    <span className='text-[#D7D7D7]'>Sony A7R IV</span>
-                                </div>
-                                <div className='flex items-center gap-3'>
-                                    <FiCheckCircle size={16} className='text-green-500' />
-                                    <span className='text-[#D7D7D7]'>Professional Lighting Kit</span>
-                                </div>
-                                <div className='flex items-center gap-3'>
-                                    <FiCheckCircle size={16} className='text-green-500' />
-                                    <span className='text-[#D7D7D7]'>Drone Photography</span>
-                                </div>
-                            </div>
+                            ) : (
+                                <p className='text-[#D7D7D7]'>No equipments listed</p>
+                            )}
                         </div>
                     </div>
                     <div className='space-y-6'>
@@ -173,49 +196,68 @@ const PhotographerProfilePage = () => {
                             <div className='space-y-3'>
                                 <div className='flex items-center gap-3'>
                                     <LuPhone size={18} className='text-[#ec0a30]' />
-                                    <span className='text-[#D7D7D7]'>9874563210</span>
+                                    <span className='text-[#D7D7D7]'>{photographer?.photographer?.mobile}</span>
                                 </div>
                                 <div className='flex items-center gap-3'>
                                     <CiMail size={18} strokeWidth={1} className='text-[#ec0a30]' />
-                                    <span className='text-[#D7D7D7]'>abcdefg@gmail.com</span>
+                                    <span className='text-[#D7D7D7]'>{photographer?.photographer?.email}</span>
                                 </div>
                                 <div className='flex items-center gap-3'>
-                                    <CiGlobe size={18} strokeWidth={1} className='text-[#ec0a30]' />
-                                    <span className='text-[#D7D7D7]'>asdfghjk.com</span>
+                                    <FaWhatsapp size={18} strokeWidth={1} className='text-[#ec0a30]' />
+                                    <span className='text-[#D7D7D7]'>{photographer?.whatsapp}</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                             <h3 className='text-xl font-bold text-white mb-4'>Follow Me</h3>
-                            <div className='flex flex-wrap gap-3'>
-                                <button className='bg-[#ec0a30] hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                    <FaInstagram size={20} />
-                                </button>
-                                <button className='bg-[#ec0a30] hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                    <FiFacebook size={20} />
-                                </button>
-                                <button className='bg-[#ec0a30] hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
-                                    <FiTwitter size={20} />
-                                </button>
-                            </div>
+                            {photographer?.socialLinks?.length > 0 ? (
+                                <div className='flex flex-wrap gap-3'>
+                                    {photographer.socialLinks.map((item, index) => {
+                                        const platform = item.platform?.toLowerCase()
+
+                                        const getIcon = () => {
+                                            switch (platform) {
+                                                case 'instagram':
+                                                    return <FaInstagram size={20} />;
+                                                case 'facebook':
+                                                    return <FiFacebook size={20} />;
+                                                case 'twitter':
+                                                    return <FiTwitter size={20} />;
+                                                case 'linkedin':
+                                                    return <FaLinkedin size={20} />;
+                                                case 'website':
+                                                    return <FaGlobe size={20} />;
+                                                default :
+                                                return <FiMapPin size={20} />;            
+                                            }
+                                        }
+
+                                        return (
+                                            <a key={index} href={item.url} target='_blank' rel='noopener noreferrer' title={item.platform} className='bg-[#ec0a30] hover:bg-[#701313] text-white p-3 rounded-xl hover:shadow-lg transition-all cursor-pointer'>
+                                                {getIcon()}
+                                            </a>
+                                        )
+                                    })}
+                                </div>
+                            ) : (
+                                <p className='text-[#D7D7D7]'>No social links available</p>
+                            )}
                         </div>
                         <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                             <h3 className='text-xl font-bold text-white mb-4'>Achievements</h3>
-                            <div className='space-y-3'>
-                                <div className='flex items-start gap-3'>
-                                    <FiAward size={16} className='text-yellow-500 mt-1' />
-                                    <span className='text-[#D7D7D7] text-sm'>Wedding Photographer of the Year 2023</span>
+                            {photographer?.achievements?.length > 0 ? (
+                                <div className='space-y-3'>
+                                    {photographer.achievements.map((item, index) => (
+                                        <div key={index} className='flex items-start gap-3'>
+                                            <FiAward size={16} className='text-yellow-500 mt-1' />
+                                            <span className='text-[#D7D7D7] text-sm'>{item}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className='flex items-start gap-3'>
-                                    <FiAward size={16} className='text-yellow-500 mt-1' />
-                                    <span className='text-[#D7D7D7] text-sm'>Featured in Modern Wedding Magazine</span>
-                                </div>
-                                <div className='flex items-start gap-3'>
-                                    <FiAward size={16} className='text-yellow-500 mt-1' />
-                                    <span className='text-[#D7D7D7] text-sm'>500+ Happy Couples</span>
-                                </div>
-                            </div>
+                            ) : (
+                                <p className='text-[#D7D7D7]'>No achievements added</p>
+                            )}
                         </div>
                     </div>
                 </div>

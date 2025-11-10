@@ -30,7 +30,7 @@ const App = () => {
         <Route path='/forgot-password' element={<ForgotPassword/>}/>
         <Route path='/allPhotographers' element={<AllPhotographers/>}/>
         <Route path='/profile' element={<ProfilePage/>}/>
-        <Route path='/photographer-profile' element={<PhotographerProfilePage/>}/>
+        <Route path='/photographer-profile/:photographerId' element={<PhotographerProfilePage/>}/>
         <Route path='/gallery' element={<Gallery/>}/>
 
         {/* photographers routes */}

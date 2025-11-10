@@ -246,6 +246,21 @@ const addSocialLink = async (req, res) => {
             return res.status(400).json({success:false, message:'URL is required'})
         }
 
+        const regexMap = {
+            instagram : /^https?:\/\/(www\.)?instagram\.com\/.+/i,
+            facebook : /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+            twitter : /^https?:\/\/(www\.)?twitter\.com\/.+/i,
+            linkedin : /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+            website : /^https?:\/\/.+/i
+        }
+
+        const key = platform.toLowerCase()
+        const isValid = regexMap[key]?.test(url)
+
+        if(!isValid){
+            return res.status(400).json({success:false, message:`Invalid URL for ${platform}`})
+        }
+
         const profile = await photographerProfileModel.findOneAndUpdate({photographer:photographerId}, {$push:{socialLinks:{platform:platform.trim(), url:url.trim()}}}, {new:true})
 
         if(!profile){
@@ -276,12 +291,27 @@ const updateSocialLink = async (req, res) => {
             return res.status(400).json({success:false, message:'Social links must be an array'})
         }
 
+        const regexMap = {
+            instagram: /^https?:\/\/(www\.)?instagram\.com\/.+/i,
+            facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+            twitter: /^https?:\/\/(www\.)?twitter\.com\/.+/i,
+            linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+            website: /^https?:\/\/.+/i
+        }
+
         for(let link of socialLinks){
             if(!link.platform || typeof link.platform !== 'string' || link.platform.trim() === ''){
                 return res.status(400).json({success:false, message:'Each link must have a valid platform'})
             }
             if(!link.url || typeof link.url !== 'string' || link.url.trim() === ''){
                 return res.status(400).json({success:false, message:'Each link must have a valid url'})
+            }
+
+            const key = link.platform.toLowerCase()
+            const isValid = regexMap[key]?.test(link.url)
+
+            if(!isValid){
+                return res.status(400).json({success:false, message:`Invalid URL for ${link.platform}`})
             }
         }
 

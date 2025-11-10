@@ -103,7 +103,7 @@ const AllPhotographers = () => {
 
                 <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
                     {photographers.map((photographer) => (
-                    <PhotographersCard key={photographer._id} photographer={photographer}/>
+                    <PhotographersCard key={photographer._id} photographer={photographer} backendUrl={backendUrl}/>
                     ))}
                 </div>
             </div>

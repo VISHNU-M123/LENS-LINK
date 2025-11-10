@@ -8,7 +8,7 @@ import { LuMessageCircle } from "react-icons/lu";
 import { IoCameraOutline } from "react-icons/io5";
 import { useNavigate } from 'react-router-dom';
 
-const PhotographersCard = ({photographer}) => {
+const PhotographersCard = ({photographer, backendUrl}) => {
 
     const [imageError, setImageError] = useState(false)
 
@@ -17,7 +17,7 @@ const PhotographersCard = ({photographer}) => {
     <div className='bg-zinc-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group'>
         <div className='relative overflow-hidden cursor-pointer group'>
             {!imageError ? (
-                <img src={profileImage} className='w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300' alt="" />
+                <img src={photographer.photographer.profileImage ? `${backendUrl}${photographer.photographer.profileImage}` : profileImage} onError={() => setImageError(true)} className='w-full h-64 object-cover group-hover:scale-110 transition-transform duration-300' alt="" />
             ) : (
                 <div className='w-full h-64 bg-zinc-700 flex items-center justify-center'>
                     <IoCameraOutline className='w-16 h-16 text-zinc-500' />
@@ -43,11 +43,11 @@ const PhotographersCard = ({photographer}) => {
 
         <div className='p-5'>
             <div className='mb-3'>
-                <h3 className='text-xl font-bold text-white mb-1 truncate'>{photographer.name}</h3>
-                <p className='text-zinc-300 font-medium mb-1 truncate'>Studio name</p>
+                <h3 className='text-xl font-bold text-white mb-1 truncate'>{photographer.photographer.name}</h3>
+                <p className='text-zinc-300 font-medium mb-1 truncate'>{photographer.studioName}</p>
                 <div className='flex items-center text-zinc-400 text-sm mb-2'>
                     <FiMapPin className='w-4 h-4 mr-1' />
-                    <span className='truncate'>Location</span>
+                    <span className='truncate'>{photographer.location}</span>
                 </div>
             </div>
 
@@ -78,12 +78,12 @@ const PhotographersCard = ({photographer}) => {
                 </div>
                 <div>
                     <p className='text-zinc-400 text-xs'>Experience</p>
-                    <p className='text-white font-medium'>5 years</p>
+                    <p className='text-white font-medium'>{photographer.experience} years</p>
                 </div>
             </div>
 
             <div className='flex gap-2'>
-                <button onClick={() => navigate('/photographer-profile')} className='flex-1 bg-[#ec0a30] hover:bg-[#701313] text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer'>
+                <button onClick={() => navigate(`/photographer-profile/${photographer.photographer._id}`)} className='flex-1 bg-[#ec0a30] hover:bg-[#701313] text-white py-2 px-4 rounded-lg font-medium transition-colors duration-200 flex items-center justify-center gap-2 cursor-pointer'>
                     <IoEyeOutline className='w-4 h-4' />
                     view portfolio
                 </button>

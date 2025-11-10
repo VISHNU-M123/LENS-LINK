@@ -347,6 +347,22 @@ const ProfileDetails = () => {
           return
         }
 
+        const regexMap = {
+          instagram: /^https?:\/\/(www\.)?instagram\.com\/.+/i,
+          facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+          twitter: /^https?:\/\/(www\.)?twitter\.com\/.+/i,
+          linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+          website: /^https?:\/\/.+/i
+        }
+
+        const key = newSocialLink.platform.toLowerCase()
+        const isValidUrl = regexMap[key]?.test(newSocialLink.url)
+
+        if(!isValidUrl){
+          setShowSocialLinkError(`Enter a valid ${newSocialLink.platform} URL`)
+          return
+        }
+
         const {data} = await axios.post(`${backendUrl}/api/photographer/addSocialLink`, {platform:newSocialLink.platform, url:newSocialLink.url}, {headers:{photographerToken}})
         if(data.success){
           alert('new social link added successfully')
@@ -366,6 +382,14 @@ const ProfileDetails = () => {
         const errors = Array(editedSocialLink.length).fill({platform:'', url:''})
         let hasError = false
 
+        const regexMap = {
+          instagram: /^https?:\/\/(www\.)?instagram\.com\/.+/i,
+          facebook: /^https?:\/\/(www\.)?facebook\.com\/.+/i,
+          twitter: /^https?:\/\/(www\.)?twitter\.com\/.+/i,
+          linkedin: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+          website: /^https?:\/\/.+/i
+        }
+
         const cleanedSocialLink = editedSocialLink.map((item, index) => {
           let platform = item.platform.trim()
           let url = item.url.trim()
@@ -378,6 +402,13 @@ const ProfileDetails = () => {
           if(!url){
             errors[index] = {...errors[index], url:'URL cannot be empty'}
             hasError = true
+          }else{
+            const key = platform?.toLowerCase()
+            const isValidUrl = regexMap[key]?.test(url)
+            if(!isValidUrl){
+              errors[index] = {...errors[index], url:`Invalid ${platform} URL`}
+              hasError = true
+            }
           }
 
           return {platform, url}
