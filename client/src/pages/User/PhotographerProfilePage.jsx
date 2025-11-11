@@ -34,6 +34,7 @@ const PhotographerProfilePage = () => {
     const [activeTab, setActiveTab] = useState('about')
     const [showBookingModal, setShowBookingModal] = useState(false)
     const [selectedImage, setSelectedImage] = useState(null)
+    const [services, setServices] = useState([])
 
     const tabs = [
         { id: 'about', label: 'About', icon: Users },
@@ -60,6 +61,21 @@ const PhotographerProfilePage = () => {
         }
 
         fetchPhotographerProfile()
+    },[photographerId])
+
+    useEffect(() => {
+        const fetchPhotographerServices = async () => {
+            try {
+                const {data} = await axios.get(`${backendUrl}/api/user/photographerServices/${photographerId}`)
+                if(data.success){
+                    setServices(data.services)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        }
+
+        fetchPhotographerServices()
     },[photographerId])
   return (
     <div className='w-full overflow-x-hidden bg-black'>
@@ -298,55 +314,28 @@ const PhotographerProfilePage = () => {
             {activeTab === 'services' && (
                 <div className='bg-[#181818] rounded-xl shadow-sm p-6'>
                     <h3 className='text-xl font-bold text-white mb-6'>Services & Pricing</h3>
-                    <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
-                        <div className='bg-[#222222] rounded-xl p-6 hover:shadow-lg transition-shadow'>
-                            <div className='flex justify-between items-start mb-3'>
-                                <h4 className='text-lg font-semibold text-white'>Wedding Photography</h4>
-                                <span className='text-[#ec0a30] font-bold'>$1,200 - $3,500</span>
-                            </div>
-                            <div className='mb-3'>
-                                <p className='text-sm font-normal text-white'>Fine art wedding photography appreciates beauty and light and takes a tremendous amount of skill and knowledge of light to execute well. The images focus mostly on the couple and details of the day, shot to make everything look as beautiful as possible.</p>
-                            </div>
-                            <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
-                                <FaRegClock size={16} />
-                                <span className='text-sm'>Full Day</span>
-                            </div>
-                            <button className='w-full bg-[#ec0a30] hover:bg-[#701313] text-white py-2 rounded-lg font-medium transition-colors cursor-pointer'>Book this service</button>
+                    {services.length > 0 ? (
+                        <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                            {services.map((service) => (
+                                <div key={service._id} className='bg-[#222222] rounded-xl p-6 hover:shadow-lg transition-shadow'>
+                                    <div className='flex justify-between items-start mb-3'>
+                                        <h4 className='text-lg font-semibold text-white'>{service.serviceName}</h4>
+                                        <span className='text-[#ec0a30] font-bold'>{service.currency === 'INR' ? '₹' : '$'}{service.minPrice} - {service.currency === 'INR' ? '₹' : '$'}{service.maxPrice}</span>
+                                    </div>
+                                    <div className='mb-3'>
+                                        <p className='text-sm font-normal text-white'>{service.serviceDescription}</p>
+                                    </div>
+                                    <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
+                                        <FaRegClock size={16} />
+                                        <span className='text-sm'>{service.serviceDuration}</span>
+                                    </div>
+                                    <button className='w-full bg-[#ec0a30] hover:bg-[#701313] text-white py-2 rounded-lg font-medium transition-colors cursor-pointer'>Book this service</button>
+                                </div>
+                            ))}
                         </div>
-                        <div className='bg-[#222222] rounded-xl p-6 hover:shadow-lg transition-shadow'>
-                            <div className='flex justify-between items-start mb-3'>
-                                <h4 className='text-lg font-semibold text-white'>Engagement Session</h4>
-                                <span className='text-[#ec0a30] font-bold'>$350 - $600</span>
-                            </div>
-                            <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
-                                <FaRegClock size={16} />
-                                <span className='text-sm'>2-3 Hours</span>
-                            </div>
-                            <button className='w-full bg-[#ec0a30] hover:bg-[#701313] text-white py-2 rounded-lg font-medium transition-colors cursor-pointer'>Book this service</button>
-                        </div>
-                        <div className='bg-[#222222] rounded-xl p-6 hover:shadow-lg transition-shadow'>
-                            <div className='flex justify-between items-start mb-3'>
-                                <h4 className='text-lg font-semibold text-white'>Portrait Session</h4>
-                                <span className='text-[#ec0a30] font-bold'>$200 - $450</span>
-                            </div>
-                            <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
-                                <FaRegClock size={16} />
-                                <span className='text-sm'>1-2 Hours</span>
-                            </div>
-                            <button className='w-full bg-[#ec0a30] hover:bg-[#701313] text-white py-2 rounded-lg font-medium transition-colors cursor-pointer'>Book this service</button>
-                        </div>
-                        <div className='bg-[#222222] rounded-xl p-6 hover:shadow-lg transition-shadow'>
-                            <div className='flex justify-between items-start mb-3'>
-                                <h4 className='text-lg font-semibold text-white'>Event Photography</h4>
-                                <span className='text-[#ec0a30] font-bold'>$800 - $1,800</span>
-                            </div>
-                            <div className='flex items-center gap-2 text-[#D7D7D7] mb-4'>
-                                <FaRegClock size={16} />
-                                <span className='text-sm'>4-8 Hours</span>
-                            </div>
-                            <button className='w-full bg-[#ec0a30] hover:bg-[#701313] text-white py-2 rounded-lg font-medium transition-colors cursor-pointer'>Book this service</button>
-                        </div>
-                    </div>
+                    ) : (
+                        <p className='text-[#D7D7D7]'>No services added yet</p>
+                    )}
                 </div>
             )}
 

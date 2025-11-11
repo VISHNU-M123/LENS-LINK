@@ -6,6 +6,7 @@ import nodemailer from 'nodemailer'
 import jwt from 'jsonwebtoken'
 import photographerModel from '../models/photographerModel.js';
 import photographerProfileModel from '../models/photographerProfileModel.js';
+import serviceModel from '../models/serviceModel.js';
 
 const registerUser = async (req, res) => {
     try {
@@ -268,6 +269,22 @@ const loadSinglePhotographer = async (req, res) => {
     }
 }
 
+const loadServicesByPhotographer = async (req, res) => {
+    try {
+        const {photographerId} = req.params
+
+        if(!photographerId){
+            return res.status(400).json({success:false, message:'Photographer not found'})
+        }
+
+        const services = await serviceModel.find({photographer:photographerId, serviceStatus:'Active'}).sort({createdAt:-1})
+
+        return res.status(200).json({success:true, services})
+    } catch (error) {
+        res.status(500).json({success:false, message:error.message})
+    }
+}
+
 export {
     registerUser,
     verifyOtp,
@@ -275,5 +292,6 @@ export {
     verifyLogin,
     loadAllPhotographer,
     getUserProfile,
-    loadSinglePhotographer
+    loadSinglePhotographer,
+    loadServicesByPhotographer
 }
